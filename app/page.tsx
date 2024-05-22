@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { getAllEvents } from "@/lib/db";
 import { Event, User } from "@prisma/client";
 import EventCard from "@/components/EventCard";
+import Link from "next/link";
 
 type EventWithUsers = Event & {
   users: {
@@ -14,19 +14,21 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-start justify-start">
-      <div className="container">
-        Home Page
-        <div className="flex justify-center flex-row flex-wrap gap-5">
+      <div className="container mt-5">
+        <h3>Hello. Find your community events here.</h3>
+        <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
           {events.map((event) => (
-            <EventCard
-              key={event.id}
-              eventTitle={event.title}
-              eventDescription={event.description}
-              eventLocation={event.location}
-              startTime={event.startTime}
-              endTime={event.endTime}
-              attendees={event.users.map((userRelation) => userRelation.user)}
-            />
+            <Link href={`/events/${event.id}`} key={event.id}>
+              <EventCard
+                eventTitle={event.title}
+                eventDescription={event.description}
+                eventLocation={event.location}
+                startTime={event.startTime}
+                endTime={event.endTime}
+                eventImage={event.imageUrl}
+                attendees={event.users.map((userRelation) => userRelation.user)}
+              />
+            </Link>
           ))}
         </div>
       </div>

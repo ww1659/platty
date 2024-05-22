@@ -11,3 +11,18 @@ export async function getAllEvents() {
     },
   });
 }
+
+export async function getEventById(eventId: string) {
+  return await prisma.event.findUnique({
+    where: {
+      id: parseInt(eventId),
+    },
+    include: {
+      users: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
+}

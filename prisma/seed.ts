@@ -35,6 +35,7 @@ async function main() {
         endTime: event.end_time,
         createdAt: event.created_at,
         updatedAt: event.updated_at,
+        imageUrl: event.image_url,
       } as any,
     });
   }
