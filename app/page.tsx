@@ -2,6 +2,8 @@ import { getAllEvents } from "@/lib/db";
 import { Event, User } from "@prisma/client";
 import EventCard from "@/components/EventCard";
 import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 type EventWithUsers = Event & {
   users: {
@@ -11,11 +13,17 @@ type EventWithUsers = Event & {
 
 export default async function Home() {
   const events: EventWithUsers[] = await getAllEvents();
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error || !data?.user) {
+    redirect("/login");
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-start justify-start">
       <div className="container mt-5">
-        <h3>Hello. Find your community events here.</h3>
+        <h3>Hello {data.user?.email}</h3>
         <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
           {events.map((event) => (
             <Link href={`/events/${event.id}`} key={event.id}>

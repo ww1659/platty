@@ -38,6 +38,15 @@ export default function Navbar({
             >
               Home
             </Link>
+            <Link
+              href="/login"
+              className={cn(
+                "transition-colors hover:text-foreground/80",
+                pathname === "/login" ? "text-foreground" : "text-foreground/60"
+              )}
+            >
+              Login
+            </Link>
           </nav>
         </div>
       </div>
