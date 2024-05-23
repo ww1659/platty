@@ -59,6 +59,7 @@ export default function EventPage() {
             startTime={event.startTime}
             endTime={event.endTime}
             eventImage={event.imageUrl}
+            eventPrice={event.price}
             attendees={event.users.map((userRelation) => userRelation.user)}
           />
         )}

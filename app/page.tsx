@@ -26,6 +26,7 @@ export default async function Home() {
                 startTime={event.startTime}
                 endTime={event.endTime}
                 eventImage={event.imageUrl}
+                eventPrice={event.price}
                 attendees={event.users.map((userRelation) => userRelation.user)}
               />
             </Link>

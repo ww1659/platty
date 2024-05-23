@@ -36,6 +36,8 @@ async function main() {
         createdAt: event.created_at,
         updatedAt: event.updated_at,
         imageUrl: event.image_url,
+        price: event.price,
+        tagline: event.tagline,
       } as any,
     });
   }

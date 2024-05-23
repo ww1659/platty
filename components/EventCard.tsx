@@ -20,6 +20,7 @@ type EventCardProps = {
   startTime: Date;
   endTime: Date;
   eventImage: string;
+  eventPrice: number;
   attendees: User[];
 };
 
@@ -30,6 +31,7 @@ export default function EventCard({
   startTime,
   endTime,
   eventImage,
+  eventPrice,
   attendees,
 }: EventCardProps) {
   const numberOfAttendees = attendees.length;
@@ -53,11 +55,18 @@ export default function EventCard({
         <CardTitle className="flex-1">{eventTitle}</CardTitle>
         <CardDescription className="flex-1">{eventDescription}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
+      <CardContent className="flex-1 flex flex-col pb-2">
         <p className="flex-1 text-sm font-bold">{formatDate(startTime)}</p>
         <p className="flex-1 text-sm font-light">{eventLocation}</p>
       </CardContent>
-      <CardFooter className="flex-1 pb-2">
+      <CardFooter className="flex-col justify-center items-start flex-1 pb-2">
+        <div className="flex">
+          {eventPrice.toString() === "0" ? (
+            <p>Free</p>
+          ) : (
+            <p>£{eventPrice.toString()}</p>
+          )}
+        </div>
         <p className="font-bold">Attending: {numberOfAttendees}</p>
       </CardFooter>
     </Card>

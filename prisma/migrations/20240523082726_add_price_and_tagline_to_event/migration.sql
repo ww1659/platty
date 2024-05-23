@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Event" ADD COLUMN     "price" DECIMAL(65,30) NOT NULL DEFAULT 0.00,
+ADD COLUMN     "tagline" TEXT NOT NULL DEFAULT '';
