@@ -1,5 +1,5 @@
 "use client";
-import { signup } from "@/app/login/actions";
+import { signup } from "@/utils/supabase/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -114,7 +114,7 @@ export default function SignupForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Log in</Button>
+          <Button type="submit">Sign Up</Button>
         </form>
       </Form>
     </div>

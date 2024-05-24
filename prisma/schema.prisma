@@ -42,4 +42,9 @@ model EventOnUser {
 
   @@id([userId, eventId])
   @@map("events_on_users")
+
+ 
 }
+
+
+

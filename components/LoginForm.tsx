@@ -1,9 +1,8 @@
 "use client";
-import { login } from "@/app/login/actions";
+import { login } from "@/utils/supabase/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
