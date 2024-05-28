@@ -24,7 +24,6 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const router = useRouter();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

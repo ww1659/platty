@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 
-import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { fetchImage } from "@/lib/unsplash";
 import { formatDate } from "@/lib/utils";
@@ -21,7 +20,6 @@ type EventCardProps = {
   endTime: Date;
   eventImage: string;
   eventPrice: number;
-  attendees: User[];
 };
 
 export default function EventCard({
@@ -32,10 +30,7 @@ export default function EventCard({
   endTime,
   eventImage,
   eventPrice,
-  attendees,
 }: EventCardProps) {
-  const numberOfAttendees = attendees.length;
-
   return (
     <Card className="w-[320px] flex flex-col">
       <div>
@@ -67,7 +62,6 @@ export default function EventCard({
             <p>£{eventPrice.toString()}</p>
           )}
         </div>
-        <p className="font-bold">Attending: {numberOfAttendees}</p>
       </CardFooter>
     </Card>
   );

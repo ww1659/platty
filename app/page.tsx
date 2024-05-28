@@ -1,18 +1,10 @@
-import { getAllEvents } from "@/lib/db";
-import { Event, User } from "@prisma/client";
+import { supaGetAllEvents } from "@/lib/db";
 import EventCard from "@/components/EventCard";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-
-type EventWithUsers = Event & {
-  users: {
-    user: User;
-  }[];
-};
 
 export default async function Home() {
-  const events: EventWithUsers[] = await getAllEvents();
+  const events = await supaGetAllEvents();
   const supabase = createClient();
   const { data, error } = await supabase.auth.getUser();
 
@@ -34,8 +26,7 @@ export default async function Home() {
                 startTime={event.startTime}
                 endTime={event.endTime}
                 eventImage={event.imageUrl}
-                eventPrice={event.price}
-                attendees={event.users.map((userRelation) => userRelation.user)}
+                eventPrice={parseFloat(event.price.toString())}
               />
             </Link>
           ))}

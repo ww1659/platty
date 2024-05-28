@@ -24,7 +24,8 @@ export default function Navbar({
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user) {
         setLoading(false);
-        console.log("No user:", error);
+        console.log("No user:", error?.message);
+        console.log("Error Code:", error?.code);
       } else {
         setLoading(false);
         setUser(data.user);
@@ -38,8 +39,6 @@ export default function Navbar({
     await logout();
     router.push("/");
   };
-
-  console.log(user);
 
   return (
     <header className="sticky top-0 bg-background w-full z-50 border-b">
@@ -69,6 +68,19 @@ export default function Navbar({
             >
               Home
             </Link>
+            {user && (
+              <Link
+                href={`/events/users/${user.id}`}
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname === `/events/users/${user.id}`
+                    ? "text-foreground"
+                    : "text-foreground/60"
+                )}
+              >
+                My Events
+              </Link>
+            )}
           </nav>
         </div>
         <div className="flex ml-auto">

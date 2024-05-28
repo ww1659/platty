@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Team Meeting",
+    "description": "Monthly team meeting to discuss project updates and goals.",
+    "location": "Conference Room A",
+    "start_time": "2024-06-01T10:00:00Z",
+    "end_time": "2024-06-01T11:00:00Z",
+    "created_at": "2024-05-01T08:00:00Z",
+    "updated_at": "2024-05-01T08:00:00Z",
+    "image_url": "https://images.unsplash.com/photo-1622675363311-3e1904dc1885?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MTQ3NzR8MHwxfHNlYXJjaHwxfHxUZWFtJTIwTWVldGluZ3xlbnwwfHx8fDE3MTYzNjk3MTB8MA&ixlib=rb-4.0.3&q=80&w=400",
+    "price": 0.0,
+    "tagline": "Monthly team meeting to discuss project updates and goals."
+  },
+  {
+    "title": "Product Launch",
+    "description": "Launch event for the new product line.",
+    "location": "Main Auditorium",
+    "start_time": "2024-06-15T14:00:00Z",
+    "end_time": "2024-06-15T16:00:00Z",
+    "created_at": "2024-05-10T09:00:00Z",
+    "updated_at": "2024-05-10T09:00:00Z",
+    "image_url": "https://images.unsplash.com/photo-1622675363311-3e1904dc1885?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MTQ3NzR8MHwxfHNlYXJjaHwxfHxUZWFtJTIwTWVldGluZ3xlbnwwfHx8fDE3MTYzNjk3MTB8MA&ixlib=rb-4.0.3&q=80&w=400",
+    "price": 4.99,
+    "tagline": "Launch event for the new product line."
+  },
+  {
+    "title": "Client Presentation",
+    "description": "Presentation of the new project proposal to the client.",
+    "location": "Meeting Room 2",
+    "start_time": "2024-06-20T13:00:00Z",
+    "end_time": "2024-06-20T14:30:00Z",
+    "created_at": "2024-05-15T10:00:00Z",
+    "updated_at": "2024-05-15T10:00:00Z",
+    "image_url": "https://images.unsplash.com/photo-1622675363311-3e1904dc1885?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MTQ3NzR8MHwxfHNlYXJjaHwxfHxUZWFtJTIwTWVldGluZ3xlbnwwfHx8fDE3MTYzNjk3MTB8MA&ixlib=rb-4.0.3&q=80&w=400",
+    "price": 10,
+    "tagline": "Presentation of the new project proposal to the client."
+  },
+  {
+    "title": "Workshop: AI in Marketing",
+    "description": "Interactive workshop on the application of AI in marketing strategies.",
+    "location": "Tech Lab",
+    "start_time": "2024-07-01T09:00:00Z",
+    "end_time": "2024-07-01T12:00:00Z",
+    "created_at": "2024-05-20T11:00:00Z",
+    "updated_at": "2024-05-20T11:00:00Z",
+    "image_url": "https://images.unsplash.com/photo-1622675363311-3e1904dc1885?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MTQ3NzR8MHwxfHNlYXJjaHwxfHxUZWFtJTIwTWVldGluZ3xlbnwwfHx8fDE3MTYzNjk3MTB8MA&ixlib=rb-4.0.3&q=80&w=400",
+    "price": 0.0,
+    "tagline": "Interactive workshop on the application of AI in marketing strategies."
+  },
+  {
+    "title": "Board Meeting",
+    "description": "Quarterly board meeting to review financial performance and strategic plans.",
+    "location": "Board Room",
+    "start_time": "2024-07-10T15:00:00Z",
+    "end_time": "2024-07-10T17:00:00Z",
+    "created_at": "2024-05-25T12:00:00Z",
+    "updated_at": "2024-05-25T12:00:00Z",
+    "image_url": "https://images.unsplash.com/photo-1622675363311-3e1904dc1885?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MTQ3NzR8MHwxfHNlYXJjaHwxfHxUZWFtJTIwTWVldGluZ3xlbnwwfHx8fDE3MTYzNjk3MTB8MA&ixlib=rb-4.0.3&q=80&w=400",
+    "price": 0.0,
+    "tagline": "Quarterly board meeting to review financial performance and strategic plans."
+  }
+]

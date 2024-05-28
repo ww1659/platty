@@ -1,21 +1,14 @@
 "use client";
 
 import EventCard from "@/components/EventCard";
-import { getAllEvents } from "@/lib/db";
-import { Event, User } from "@prisma/client";
+import { Event } from "@/types/Event";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-
-type EventWithUsers = Event & {
-  users: {
-    user: User;
-  }[];
-};
 
 export default function EventPage() {
   const pathname = usePathname();
   const eventId = pathname.slice(-1);
-  const [event, setEvent] = useState<EventWithUsers | null>(null);
+  const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -59,8 +52,7 @@ export default function EventPage() {
             startTime={event.startTime}
             endTime={event.endTime}
             eventImage={event.imageUrl}
-            eventPrice={event.price}
-            attendees={event.users.map((userRelation) => userRelation.user)}
+            eventPrice={parseFloat(event.price.toString())}
           />
         )}
       </div>
