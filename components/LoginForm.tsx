@@ -1,5 +1,5 @@
 "use client";
-import { login } from "@/utils/supabase/actions";
+import { supaLogin } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/supabase/client";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -36,9 +37,17 @@ export default function LoginForm() {
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
+    const supabase = createClient();
+
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
     try {
-      await login(formData);
+      // await supaLogin(formData);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       router.push("/");
     } catch (error) {
       console.error("Login failed:", error);

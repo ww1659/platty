@@ -1,7 +1,7 @@
 "use client";
 
 import EventCard from "@/components/EventCard";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/supabase/client";
 import { Event } from "@/types/Event";
 import { useEffect, useState } from "react";
 

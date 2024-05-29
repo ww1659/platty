@@ -1,12 +1,11 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function logout() {
+export async function supaLogout() {
   const supabase = createClient();
-
   const { error } = await supabase.auth.signOut();
   if (error) {
     console.error("Error logging out:", error);
@@ -16,25 +15,21 @@ export async function logout() {
   redirect("/");
 }
 
-export async function login(formData: FormData) {
+export async function supaLogin(formData: FormData) {
   const supabase = createClient();
-
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
-
   const { error } = await supabase.auth.signInWithPassword(data);
-
   if (error) {
     redirect("/error");
   }
-
   revalidatePath("/", "layout");
   redirect("/");
 }
 
-export async function signup(formData: FormData) {
+export async function supaSignup(formData: FormData) {
   const supabase = createClient();
 
   const inputData = {
@@ -63,10 +58,6 @@ export async function signup(formData: FormData) {
     console.error("Profile creation error:", profileError);
     redirect("/error");
   }
-
-  // if (error) {
-  //   redirect("/error");
-  // }
 
   revalidatePath("/", "layout");
   redirect("/");

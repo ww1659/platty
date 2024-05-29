@@ -1,4 +1,4 @@
-import { supaGetEventsByUserId } from "@/lib/db";
+import { supaGetEventsByUserId } from "@/lib/queries";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);

@@ -3,41 +3,22 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { logout } from "@/utils/supabase/actions";
+import { useAuth } from "@/context/UserContext";
+// import { supaLogout } from "@/lib/actions";
 
 export default function Navbar({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
-
-  useEffect(() => {
-    const getUser = async () => {
-      setLoading(true);
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) {
-        setLoading(false);
-        console.log("No user:", error?.message);
-        console.log("Error Code:", error?.code);
-      } else {
-        setLoading(false);
-        setUser(data.user);
-      }
-    };
-    getUser();
-  }, []);
 
   const handleLogout = async () => {
-    console.log("Logout Pressed");
-    await logout();
-    router.push("/");
+    // await supaLogout(); //server
+    logout(); //client
+    router.push("/login");
   };
 
   return (
@@ -84,7 +65,7 @@ export default function Navbar({
           </nav>
         </div>
         <div className="flex ml-auto">
-          {user && !loading ? (
+          {user ? (
             <Button size="sm" onClick={handleLogout}>
               Logout
             </Button>

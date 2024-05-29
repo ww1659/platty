@@ -1,5 +1,5 @@
 "use client";
-import { signup } from "@/utils/supabase/actions";
+import { supaSignup } from "@/lib/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -46,7 +46,7 @@ export default function SignupForm() {
     formData.append("lastName", values.lastName);
 
     try {
-      await signup(formData);
+      await supaSignup(formData);
       router.push("/");
     } catch (error) {
       console.error("Signup failed:", error);

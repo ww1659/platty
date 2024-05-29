@@ -1,7 +1,7 @@
-import { supaGetAllEvents } from "@/lib/db";
+import { supaGetAllEvents } from "@/lib/queries";
 import EventCard from "@/components/EventCard";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/supabase/server";
 
 export default async function Home() {
   const events = await supaGetAllEvents();
@@ -15,7 +15,7 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col items-start justify-start">
       <div className="container mt-5">
-        <h3>Hello {data.user?.email}</h3>
+        <h3>Welcome</h3>
         <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
           {events.map((event) => (
             <Link href={`/events/${event.id}`} key={event.id}>

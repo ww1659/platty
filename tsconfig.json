@@ -26,7 +26,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "utils/supabase/seed.js"
+    "supabase/seed.js"
   ],
   "exclude": ["node_modules"]
 }

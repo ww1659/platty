@@ -1,5 +1,5 @@
-import prisma from "./connection";
-import { createClient } from "@/utils/supabase/server";
+// import prisma from "./connection";
+import { createClient } from "@/supabase/server";
 import { Event } from "@/types/Event";
 
 // export async function getAllEvents() {
@@ -114,7 +114,6 @@ export async function supaGetEventsByUserId(userId: string): Promise<Event[]> {
       throw new Error(`Supabase error: ${eventUsersError.message}`);
     }
 
-    // Extract the event IDs associated with the user
     const eventIds = eventUsersData.map((eventUser: any) => eventUser.event_id);
 
     // Fetch events corresponding to the event IDs

@@ -6,81 +6,73 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { createClient } from "@/utils/supabase/client";
-
-type User = {
-  id: string;
-  firstName: string;
-  lastName: string;
-};
+import { createClient } from "@/supabase/client";
+import { User, Session } from "@supabase/supabase-js";
 
 type UserContextType = {
-  user: User | null;
-  isLoading: boolean;
-  login: () => Promise<void>;
-  logout: () => Promise<void>;
+  user: User | null | undefined;
+  session: Session | null;
+  login: (formData: FormData) => Promise<void>;
+  logout: () => void;
 };
+
 const UserContext = createContext<UserContextType>({
   user: null,
-  isLoading: true,
+  session: null,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
 });
+
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const supabase = createClient();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>();
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const getUserProfile = async () => {
-      setIsLoading(true);
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
-
-      if (userError || !userData.user) {
-        console.error("Error getting user:", userError);
-        setIsLoading(false);
-        return;
-      }
-
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", userData.user.id)
-        .single();
-
-      if (profileError) {
-        console.error("Error getting user profile:", profileError);
-        setIsLoading(false);
-        return;
-      }
-
-      setUser({
-        id: userData.user.id,
-        firstName: profileData.first_name,
-        lastName: profileData.last_name,
-      });
+    const setData = async () => {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+      if (error) throw error;
+      setSession(session);
+      setUser(session?.user);
       setIsLoading(false);
     };
 
-    getUserProfile();
-  }, []);
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log(event);
+        setSession(session);
+        setUser(session?.user);
+        setIsLoading(false);
+      }
+    );
 
-  const login = async () => {};
+    setData();
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [supabase.auth]);
+
+  const login = async () => {
+    supabase.auth.getUser();
+  };
 
   const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+    supabase.auth.signOut();
   };
 
   return (
-    <UserContext.Provider value={{ user, isLoading, login, logout }}>
-      {children}
+    <UserContext.Provider value={{ user, session, login, logout }}>
+      {!isLoading && children}
     </UserContext.Provider>
   );
 };
 
-export const useUser = () => {
+export const useAuth = () => {
   const context = useContext(UserContext);
   if (context === undefined) {
     throw new Error("useUser must be used within a UserProvider");
