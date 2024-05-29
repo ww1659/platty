@@ -4,21 +4,28 @@ import LoginForm from "@/components/LoginForm";
 import SignupForm from "@/components/SignupForm";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/supabase/client";
+import { useAuth } from "@/context/UserContext";
 
 export default function LoginPage() {
   const supabase = createClient();
-  const session = supabase.auth.getSession();
-  console.log(session);
+  const { session } = useAuth();
 
   const googleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        scopes: "https://www.googleapis.com/auth/calendar",
-      },
-    });
-    if (error) {
-      console.error("Google sign in error:", error);
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          scopes: "https://www.googleapis.com/auth/calendar",
+        },
+      });
+
+      if (error) {
+        console.error("Google sign in error:", error);
+        return;
+      }
+      console.log(data, "DATA");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -43,8 +50,10 @@ export default function LoginPage() {
           </Tabs>
         </div>
         <div className="flex items-center justify-center mt-5">
-          {session !== null ? (
-            <Button onClick={() => googleSignIn()}>Sign in with Google</Button>
+          {session === null ? (
+            <Button variant="secondary" onClick={() => googleSignIn()}>
+              Sign in with Google
+            </Button>
           ) : null}
         </div>
       </div>

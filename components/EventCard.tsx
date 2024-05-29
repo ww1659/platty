@@ -9,7 +9,7 @@ import {
 import Image from "next/image";
 
 import { useEffect, useState } from "react";
-import { fetchImage } from "@/lib/unsplash";
+import { fetchImage } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
 type EventCardProps = {

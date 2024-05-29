@@ -116,7 +116,6 @@ export async function supaGetEventsByUserId(userId: string): Promise<Event[]> {
 
     const eventIds = eventUsersData.map((eventUser: any) => eventUser.event_id);
 
-    // Fetch events corresponding to the event IDs
     const { data: eventsData, error: eventsError } = await supabase
       .from("events")
       .select("*")
@@ -126,7 +125,6 @@ export async function supaGetEventsByUserId(userId: string): Promise<Event[]> {
       throw new Error(`Supabase error: ${eventsError.message}`);
     }
 
-    // Convert the data to the Event type
     const events: Event[] = eventsData.map((event: any) => ({
       id: Number(event.id),
       title: event.title,
@@ -149,4 +147,16 @@ export async function supaGetEventsByUserId(userId: string): Promise<Event[]> {
       throw new Error(`Unknown error occurred: ${error}`);
     }
   }
+}
+
+export async function supaFindUserByEmail(email: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", email)
+    .single();
+
+  if (error) throw error;
+  return data;
 }

@@ -10,4 +10,5 @@ export type Event = {
   imageUrl: string;
   price: number;
   tagline: string;
+  communityId: string;
 };

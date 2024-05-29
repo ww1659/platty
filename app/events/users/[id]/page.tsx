@@ -3,6 +3,7 @@
 import EventCard from "@/components/EventCard";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/UserContext";
+import { postGoogleCalendarEvent } from "@/lib/api";
 import { createClient } from "@/supabase/client";
 import { Event } from "@/types/Event";
 import { useEffect, useState } from "react";
@@ -12,8 +13,6 @@ export default function EventPage() {
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
   const { user } = useAuth();
-
-  const session = supabase.auth.getSession();
 
   useEffect(() => {
     const fetchEventsData = async () => {
@@ -40,17 +39,11 @@ export default function EventPage() {
     fetchEventsData();
   }, [supabase.auth]);
 
-  if (loading)
-    return (
-      <main className="flex min-h-screen flex-col items-start justify-start">
-        <div className="container mt-5">
-          <p>Loading</p>
-        </div>
-      </main>
-    );
-
   const createCalendarEvent = async (userEvent: Event) => {
-    console.log(createCalendarEvent);
+    const session = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error("User is not authenticated");
+    }
     const event = {
       summary: userEvent.title,
       description: userEvent.description,
@@ -63,25 +56,18 @@ export default function EventPage() {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
     };
-    await fetch(
-      "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-      {
-        method: "POST",
-        headers: {
-          Authorization:
-            "Bearer " + (await session).data.session?.provider_token,
-        },
-        body: JSON.stringify(event),
-      }
-    )
-      .then((data) => {
-        return data.json();
-      })
-      .then((data) => {
-        console.log(data);
-        console.log("EVENT CREATED NICE ONE");
-      });
+    const googleToken = (await session).data.session?.provider_token;
+    await postGoogleCalendarEvent(event, googleToken);
   };
+
+  if (loading)
+    return (
+      <main className="flex min-h-screen flex-col items-start justify-start">
+        <div className="container mt-5">
+          <p>Loading</p>
+        </div>
+      </main>
+    );
 
   return (
     <main className="flex min-h-screen flex-col items-start justify-start">
@@ -90,8 +76,7 @@ export default function EventPage() {
         <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
           {userEvents &&
             userEvents.map((userEvent) => (
-              <>
-                {" "}
+              <div key={userEvent.id}>
                 <EventCard
                   key={userEvent.id}
                   eventTitle={userEvent.title}
@@ -101,11 +86,14 @@ export default function EventPage() {
                   endTime={userEvent.endTime}
                   eventImage={userEvent.imageUrl}
                   eventPrice={parseFloat(userEvent.price.toString())}
-                />{" "}
-                <Button onClick={() => createCalendarEvent(userEvent)}>
+                />
+                <Button
+                  onClick={() => createCalendarEvent(userEvent)}
+                  key={`button-${userEvent.id}`}
+                >
                   Create Calendar Event
                 </Button>
-              </>
+              </div>
             ))}
         </div>
       </div>
