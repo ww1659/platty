@@ -2,8 +2,26 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LoginForm from "@/components/LoginForm";
 import SignupForm from "@/components/SignupForm";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/supabase/client";
 
 export default function LoginPage() {
+  const supabase = createClient();
+  const session = supabase.auth.getSession();
+  console.log(session);
+
+  const googleSignIn = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        scopes: "https://www.googleapis.com/auth/calendar",
+      },
+    });
+    if (error) {
+      console.error("Google sign in error:", error);
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-start justify-start">
       <div className="container mt-5">
@@ -23,6 +41,11 @@ export default function LoginPage() {
               <SignupForm />
             </TabsContent>
           </Tabs>
+        </div>
+        <div className="flex items-center justify-center mt-5">
+          {session !== null ? (
+            <Button onClick={() => googleSignIn()}>Sign in with Google</Button>
+          ) : null}
         </div>
       </div>
     </main>
