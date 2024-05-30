@@ -1,6 +1,19 @@
 // import prisma from "./connection";
 import { createClient } from "@/supabase/server";
+import { Community } from "@/types/Community";
 import { Event } from "@/types/Event";
+
+export type Userdata = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  created_at: string;
+};
+
+export type CommunityMembers = {
+  userData: Userdata[];
+  numberOfMembers: number;
+};
 
 // export async function getAllEvents() {
 //   return await prisma.event.findMany({});
@@ -47,6 +60,7 @@ export async function supaGetAllEvents() {
       imageUrl: event.image_url,
       price: parseFloat(event.price),
       tagline: event.tagline,
+      communityId: event.community_id,
     }));
 
     return events;
@@ -90,6 +104,7 @@ export async function supaGetEventById(eventId: string): Promise<Event | null> {
       imageUrl: data.image_url,
       price: parseFloat(data.price),
       tagline: data.tagline,
+      communityId: data.community_id,
     };
 
     return event;
@@ -137,6 +152,7 @@ export async function supaGetEventsByUserId(userId: string): Promise<Event[]> {
       imageUrl: event.image_url,
       price: parseFloat(event.price),
       tagline: event.tagline,
+      communityId: event.community_id,
     }));
 
     return events;
@@ -159,4 +175,89 @@ export async function supaFindUserByEmail(email: string) {
 
   if (error) throw error;
   return data;
+}
+
+export async function supaGetAllCommunities() {
+  const supabase = createClient();
+  try {
+    const { data, error } = await supabase.from("communities").select("*");
+
+    if (error) {
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    const communities: Community[] = data.map((community: Community) => ({
+      id: community.id,
+      name: community.name,
+      description: community.description,
+    }));
+
+    return communities;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Error fetching events: ${error.message}`);
+    } else {
+      throw new Error(`Unknown error occurred: ${error}`);
+    }
+  }
+}
+
+export async function supaGetCommunityMembers(
+  communityId: string
+): Promise<CommunityMembers | null> {
+  const supabase = createClient();
+  try {
+    const { data: communityUsers, error: communityUsersError } = await supabase
+      .from("communities_users")
+      .select("user_id")
+      .eq("community_id", communityId);
+
+    if (communityUsersError) {
+      throw new Error(`Supabase error: ${communityUsersError.message}`);
+    }
+
+    if (!communityUsers) {
+      return null;
+    }
+
+    const userIds = communityUsers.map(
+      (communityUser) => communityUser.user_id
+    );
+
+    const { data: userData, error: userError } = await supabase
+      .from("profiles")
+      .select("*")
+      .in("id", userIds);
+
+    if (userError) {
+      throw new Error(`Supabase error: ${userError.message}`);
+    }
+    if (!userData) {
+      return null;
+    }
+
+    return { userData: userData, numberOfMembers: userData.length };
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+
+export async function supaCheckIsAdmin(userId: string): Promise<boolean> {
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("communities_users")
+      .select("is_admin")
+      .eq("user_id", userId);
+
+    if (error) {
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    if (data[0].is_admin) return true;
+    else return false;
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
 }

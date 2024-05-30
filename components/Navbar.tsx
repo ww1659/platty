@@ -62,6 +62,19 @@ export default function Navbar({
                 My Events
               </Link>
             )}
+            {user && (
+              <Link
+                href={`/communities`}
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname === `/communities`
+                    ? "text-foreground"
+                    : "text-foreground/60"
+                )}
+              >
+                Communities
+              </Link>
+            )}
           </nav>
         </div>
         <div className="flex ml-auto">

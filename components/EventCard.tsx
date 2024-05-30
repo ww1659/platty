@@ -32,7 +32,7 @@ export default function EventCard({
   eventPrice,
 }: EventCardProps) {
   return (
-    <Card className="w-[320px] flex flex-col">
+    <Card className="w-[320px]">
       <div>
         {eventImage && (
           <Image
@@ -46,16 +46,16 @@ export default function EventCard({
         )}
       </div>
 
-      <CardHeader className="flex-1 flex flex-col pb-2">
-        <CardTitle className="flex-1">{eventTitle}</CardTitle>
-        <CardDescription className="flex-1">{eventDescription}</CardDescription>
+      <CardHeader>
+        <CardTitle>{eventTitle}</CardTitle>
+        <CardDescription>{eventDescription}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col pb-2">
-        <p className="flex-1 text-sm font-bold">{formatDate(startTime)}</p>
-        <p className="flex-1 text-sm font-light">{eventLocation}</p>
+      <CardContent>
+        <p className="text-sm font-bold">{formatDate(startTime)}</p>
+        <p className="text-sm font-light">{eventLocation}</p>
       </CardContent>
-      <CardFooter className="flex-col justify-center items-start flex-1 pb-2">
-        <div className="flex">
+      <CardFooter>
+        <div>
           {eventPrice.toString() === "0" ? (
             <p>Free</p>
           ) : (
