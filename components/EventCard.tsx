@@ -8,8 +8,6 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 
-import { useEffect, useState } from "react";
-import { fetchImage } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 
 type EventCardProps = {
@@ -32,29 +30,30 @@ export default function EventCard({
   eventPrice,
 }: EventCardProps) {
   return (
-    <Card className="w-[320px]">
-      <div>
+    <Card className="w-[280px]">
+      <div className="bg/70">
         {eventImage && (
           <Image
             className="flex-1 rounded-t-lg"
             src={eventImage}
             alt={eventTitle}
-            width={320}
+            width={280}
             height="0"
             priority={true}
           />
         )}
       </div>
-
-      <CardHeader>
-        <CardTitle>{eventTitle}</CardTitle>
-        <CardDescription>{eventDescription}</CardDescription>
+      <CardHeader className="pb-3 min-h-50 max-h-80">
+        <CardTitle className="line-clamp-2 pb-1">{eventTitle}</CardTitle>
+        <CardDescription className="line-clamp-2">
+          {eventDescription}
+        </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pb-1">
         <p className="text-sm font-bold">{formatDate(startTime)}</p>
         <p className="text-sm font-light">{eventLocation}</p>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="pb-1">
         <div>
           {eventPrice.toString() === "0" ? (
             <p>Free</p>

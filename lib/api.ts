@@ -1,6 +1,6 @@
 import axios from "axios";
 
-type Event = {
+type GoogleEvent = {
   summary: string;
   description: string;
   start: {
@@ -32,7 +32,7 @@ export async function fetchImage(keyword: string) {
 }
 
 export async function postGoogleCalendarEvent(
-  event: Event,
+  event: GoogleEvent,
   token: string | null | undefined
 ) {
   try {
@@ -46,7 +46,6 @@ export async function postGoogleCalendarEvent(
         },
       }
     );
-    console.log(response.data);
 
     return response.data;
   } catch (error) {

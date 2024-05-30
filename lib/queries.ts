@@ -3,16 +3,22 @@ import { createClient } from "@/supabase/server";
 import { Community } from "@/types/Community";
 import { Event } from "@/types/Event";
 
-export type Userdata = {
+type Userdata = {
   id: string;
   first_name: string;
   last_name: string;
   created_at: string;
 };
 
-export type CommunityMembers = {
+type CommunityMembers = {
   userData: Userdata[];
   numberOfMembers: number;
+};
+
+type UserEvent = {
+  eventData: Event;
+  assignedAt: Date;
+  inCalendar: boolean;
 };
 
 // export async function getAllEvents() {
@@ -117,12 +123,14 @@ export async function supaGetEventById(eventId: string): Promise<Event | null> {
   }
 }
 
-export async function supaGetEventsByUserId(userId: string): Promise<Event[]> {
+export async function supaGetEventsByUserId(
+  userId: string
+): Promise<UserEvent[]> {
   const supabase = createClient();
   try {
     const { data: eventUsersData, error: eventUsersError } = await supabase
       .from("events_users")
-      .select("*")
+      .select("event_id, assigned_at, in_calendar")
       .eq("user_id", userId);
 
     if (eventUsersError) {
@@ -130,6 +138,10 @@ export async function supaGetEventsByUserId(userId: string): Promise<Event[]> {
     }
 
     const eventIds = eventUsersData.map((eventUser: any) => eventUser.event_id);
+
+    if (eventIds.length === 0) {
+      return [];
+    }
 
     const { data: eventsData, error: eventsError } = await supabase
       .from("events")
@@ -140,22 +152,31 @@ export async function supaGetEventsByUserId(userId: string): Promise<Event[]> {
       throw new Error(`Supabase error: ${eventsError.message}`);
     }
 
-    const events: Event[] = eventsData.map((event: any) => ({
-      id: Number(event.id),
-      title: event.title,
-      description: event.description,
-      location: event.location,
-      startTime: new Date(event.start_time),
-      endTime: new Date(event.end_time),
-      createdAt: new Date(event.created_at),
-      updatedAt: new Date(event.updated_at),
-      imageUrl: event.image_url,
-      price: parseFloat(event.price),
-      tagline: event.tagline,
-      communityId: event.community_id,
-    }));
+    const userEvents: UserEvent[] = eventsData.map((event: any) => {
+      const eventUser = eventUsersData.find(
+        (eu: any) => eu.event_id === event.id
+      );
+      return {
+        eventData: {
+          id: Number(event.id),
+          title: event.title,
+          description: event.description,
+          location: event.location,
+          startTime: new Date(event.start_time),
+          endTime: new Date(event.end_time),
+          createdAt: new Date(event.created_at),
+          updatedAt: new Date(event.updated_at),
+          imageUrl: event.image_url,
+          price: parseFloat(event.price),
+          tagline: event.tagline,
+          communityId: event.community_id,
+        },
+        assignedAt: new Date(eventUser?.assigned_at),
+        inCalendar: eventUser?.in_calendar,
+      };
+    });
 
-    return events;
+    return userEvents;
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new Error(`Error fetching events: ${error.message}`);
@@ -257,6 +278,26 @@ export async function supaCheckIsAdmin(userId: string): Promise<boolean> {
 
     if (data[0].is_admin) return true;
     else return false;
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+
+export async function supaUpdateCalendarStatus(
+  eventId: number,
+  userId: string
+) {
+  const supabase = createClient();
+  try {
+    const { data, error } = await supabase
+      .from("events_users")
+      .update({ in_calendar: true })
+      .match({ user_id: userId, event_id: eventId });
+
+    if (error) {
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+    return { data: data, message: "calendar updated" };
   } catch (error) {
     throw new Error(`Unknown error occurred: ${error}`);
   }

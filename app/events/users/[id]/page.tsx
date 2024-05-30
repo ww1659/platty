@@ -8,8 +8,14 @@ import { createClient } from "@/supabase/client";
 import { Event } from "@/types/Event";
 import { useEffect, useState } from "react";
 
+type UserEvent = {
+  eventData: Event;
+  assignedAt: Date;
+  inCalendar: boolean;
+};
+
 export default function EventPage() {
-  const [userEvents, setUserEvents] = useState<Event[] | null>(null);
+  const [userEvents, setUserEvents] = useState<UserEvent[] | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
   const { user } = useAuth();
@@ -39,25 +45,63 @@ export default function EventPage() {
     fetchEventsData();
   }, [supabase.auth]);
 
-  const createCalendarEvent = async (userEvent: Event) => {
+  const createCalendarEvent = async (userEvent: UserEvent) => {
+    if (userEvent.inCalendar) {
+      console.log("Event is already in calendar!");
+      return;
+    }
+
     const session = await supabase.auth.getSession();
     if (!session) {
       throw new Error("User is not authenticated");
     }
-    const event = {
-      summary: userEvent.title,
-      description: userEvent.description,
+
+    const googleEvent = {
+      summary: userEvent.eventData.title,
+      description: userEvent.eventData.description,
       start: {
-        dateTime: userEvent.startTime,
+        dateTime: userEvent.eventData.startTime,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
       end: {
-        dateTime: userEvent.endTime,
+        dateTime: userEvent.eventData.endTime,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
     };
-    const googleToken = (await session).data.session?.provider_token;
-    await postGoogleCalendarEvent(event, googleToken);
+    const googleToken = session.data.session?.provider_token;
+    const googleResponse = await postGoogleCalendarEvent(
+      googleEvent,
+      googleToken
+    );
+
+    if (googleResponse.status === "confirmed" && user) {
+      const response = await fetch(`/api/events/users/${user.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: userEvent.eventData.id,
+          userId: user.id,
+        }),
+      });
+      console.log(response, "IN PAGE");
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error("Error updating inCalendar status:", error);
+      } else {
+        console.log("UserEvent inCalendar status updated successfully");
+
+        setUserEvents((currentEvents) =>
+          (currentEvents || []).map((event) =>
+            event.eventData.id === userEvent.eventData.id
+              ? { ...event, inCalendar: true }
+              : event
+          )
+        );
+      }
+    }
   };
 
   if (loading)
@@ -76,23 +120,27 @@ export default function EventPage() {
         <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
           {userEvents &&
             userEvents.map((userEvent) => (
-              <div key={userEvent.id}>
+              <div key={userEvent.eventData.id}>
                 <EventCard
-                  key={userEvent.id}
-                  eventTitle={userEvent.title}
-                  eventDescription={userEvent.description}
-                  eventLocation={userEvent.location}
-                  startTime={userEvent.startTime}
-                  endTime={userEvent.endTime}
-                  eventImage={userEvent.imageUrl}
-                  eventPrice={parseFloat(userEvent.price.toString())}
+                  key={userEvent.eventData.id}
+                  eventTitle={userEvent.eventData.title}
+                  eventDescription={userEvent.eventData.description}
+                  eventLocation={userEvent.eventData.location}
+                  startTime={userEvent.eventData.startTime}
+                  endTime={userEvent.eventData.endTime}
+                  eventImage={userEvent.eventData.imageUrl}
+                  eventPrice={parseFloat(userEvent.eventData.price.toString())}
                 />
-                <Button
-                  onClick={() => createCalendarEvent(userEvent)}
-                  key={`button-${userEvent.id}`}
-                >
-                  Create Calendar Event
-                </Button>
+                {userEvent.inCalendar ? (
+                  <p>In calendar!</p>
+                ) : (
+                  <Button
+                    onClick={() => createCalendarEvent(userEvent)}
+                    key={`button-${userEvent.eventData.id}`}
+                  >
+                    Create Calendar Event
+                  </Button>
+                )}
               </div>
             ))}
         </div>
