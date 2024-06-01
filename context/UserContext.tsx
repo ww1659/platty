@@ -8,10 +8,13 @@ import {
 } from "react";
 import { createClient } from "@/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
+import { supaCheckIsAdmin } from "@/lib/queries";
+import { checkAdminStatus } from "@/lib/serverActions";
 
 type UserContextType = {
   user: User | null | undefined;
   session: Session | null;
+  isAdmin: boolean;
   login: (formData: FormData) => Promise<void>;
   logout: () => void;
 };
@@ -19,6 +22,7 @@ type UserContextType = {
 const UserContext = createContext<UserContextType>({
   user: null,
   session: null,
+  isAdmin: false,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
 });
@@ -26,6 +30,7 @@ const UserContext = createContext<UserContextType>({
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const supabase = createClient();
   const [user, setUser] = useState<User>();
+  const [isAdmin, setIsAdmin] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,6 +43,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (error) throw error;
       setSession(session);
       setUser(session?.user);
+
+      if (session?.user) {
+        const isAdmin = await checkAdminStatus(session.user.id);
+        setIsAdmin(isAdmin);
+      }
+
       setIsLoading(false);
     };
 
@@ -65,7 +76,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, session, login, logout }}>
+    <UserContext.Provider value={{ user, session, isAdmin, login, logout }}>
       {!isLoading && children}
     </UserContext.Provider>
   );

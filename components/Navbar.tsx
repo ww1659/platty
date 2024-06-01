@@ -5,13 +5,14 @@ import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { useAuth } from "@/context/UserContext";
+import { CreateEventDialog } from "./CreateEventDialog";
 // import { supaLogout } from "@/lib/actions";
 
 export default function Navbar({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -74,6 +75,12 @@ export default function Navbar({
               >
                 Communities
               </Link>
+            )}
+            {user && isAdmin && (
+              // <Button>
+              //   <Link href={`/create-event`}>Create Event</Link>
+              // </Button>
+              <CreateEventDialog userId={user.id} />
             )}
           </nav>
         </div>

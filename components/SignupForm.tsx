@@ -1,5 +1,5 @@
 "use client";
-import { supaSignup } from "@/lib/actions";
+import { supaSignup } from "@/lib/serverActions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

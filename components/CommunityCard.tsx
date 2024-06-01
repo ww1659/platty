@@ -16,7 +16,6 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Plus } from "lucide-react";
 
 import { Community } from "@/types/Community";
-import { Button } from "./ui/button";
 import { createClient } from "@/supabase/server";
 import { supaCheckIsAdmin, supaGetCommunityMembers } from "@/lib/queries";
 
@@ -55,15 +54,15 @@ export default async function CommunityCard({
       <CardFooter>
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger className="rounded-lg bg-black">
               {inCommunity ? (
-                <Button className="rounded-full" size="icon">
-                  <Check />
-                </Button>
+                // <Button className="rounded-full" size="icon">
+                <Check className="text-white p-1" />
               ) : (
-                <Button className="rounded-full" variant="default" size="icon">
-                  <Plus />
-                </Button>
+                // </Button>
+                // <Button className="rounded-full" variant="default" size="icon">
+                <Plus />
+                // </Button>
               )}
             </TooltipTrigger>
             <TooltipContent side="bottom">

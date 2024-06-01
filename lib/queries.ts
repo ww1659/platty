@@ -1,4 +1,3 @@
-// import prisma from "./connection";
 import { createClient } from "@/supabase/server";
 import { Community } from "@/types/Community";
 import { Event } from "@/types/Event";
@@ -278,6 +277,48 @@ export async function supaCheckIsAdmin(userId: string): Promise<boolean> {
 
     if (data[0].is_admin) return true;
     else return false;
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+
+export async function supaGetCommunitiesWhereAdmin(userId: string) {
+  const supabase = createClient();
+
+  try {
+    const { data: userCommunityData, error: userCommunityError } =
+      await supabase
+        .from("communities_users")
+        .select("community_id, is_admin")
+        .eq("user_id", userId)
+        .eq("is_admin", true);
+
+    if (userCommunityError) {
+      throw new Error(`Supabase uc error: ${userCommunityError.message}`);
+    }
+
+    if (!userCommunityData || userCommunityData.length === 0) {
+      return { status: 403, msg: "User is not an admin of any community" };
+    }
+
+    if (userCommunityData) {
+      const communityIds = userCommunityData.map(
+        (userCommunity) => userCommunity.community_id
+      );
+
+      console.log(communityIds, "comm IDs");
+
+      const { data: communityData, error: communityError } = await supabase
+        .from("communities")
+        .select("*")
+        .in("id", communityIds);
+
+      if (communityError) {
+        throw new Error(`Supabase error: ${communityError.message}`);
+      }
+
+      return { communities: communityData };
+    }
   } catch (error) {
     throw new Error(`Unknown error occurred: ${error}`);
   }
