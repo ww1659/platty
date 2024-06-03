@@ -76,12 +76,7 @@ export default function Navbar({
                 Communities
               </Link>
             )}
-            {user && isAdmin && (
-              // <Button>
-              //   <Link href={`/create-event`}>Create Event</Link>
-              // </Button>
-              <CreateEventDialog userId={user.id} />
-            )}
+            {user && isAdmin && <CreateEventDialog userId={user.id} />}
           </nav>
         </div>
         <div className="flex ml-auto">

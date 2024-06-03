@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Community } from "@/types/Community";
 import { Badge } from "./ui/badge";
-import { Check } from "lucide-react";
 
 export default function CommunityDialogCard({
   id,

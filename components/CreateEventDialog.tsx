@@ -50,17 +50,15 @@ export function CreateEventDialog({ userId }: CreateEventDialogProps) {
         <div className="flex flex-wrap items-center justify-center m-1">
           {communities &&
             communities.map((community) => (
-              <Link
-                href={`/create-event/${community.id}`}
-                key={community.id}
-                className="m-1"
-              >
-                <CommunityDialogCard
-                  id={community.id}
-                  name={community.name}
-                  description={community.description}
-                />
-              </Link>
+              <DialogClose asChild key={community.id}>
+                <Link href={`/create-event/${community.id}`} className="m-1">
+                  <CommunityDialogCard
+                    id={community.id}
+                    name={community.name}
+                    description={community.description}
+                  />
+                </Link>
+              </DialogClose>
             ))}
         </div>
         <DialogFooter className="sm:justify-start">

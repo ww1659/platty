@@ -78,6 +78,43 @@ export async function supaGetAllEvents() {
   }
 }
 
+export async function supaGetCommunityById(communityId: string) {
+  console.log(communityId);
+
+  const supabase = createClient();
+  try {
+    const { data, error } = await supabase
+      .from("communities")
+      .select("*")
+      .eq("id", communityId)
+      .single();
+
+    if (error) {
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    // If no data is returned, return null
+    if (!data) {
+      return null;
+    }
+
+    // Convert the data to the Event type
+    const community: Community = {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+    };
+
+    return community;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Error fetching event: ${error.message}`);
+    } else {
+      throw new Error(`Unknown error occurred: ${error}`);
+    }
+  }
+}
+
 export async function supaGetEventById(eventId: string): Promise<Event | null> {
   const supabase = createClient();
   try {
@@ -305,8 +342,6 @@ export async function supaGetCommunitiesWhereAdmin(userId: string) {
       const communityIds = userCommunityData.map(
         (userCommunity) => userCommunity.community_id
       );
-
-      console.log(communityIds, "comm IDs");
 
       const { data: communityData, error: communityError } = await supabase
         .from("communities")
