@@ -1,8 +1,10 @@
 import { supaGetEventById } from "@/lib/queries";
 
-export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const eventId = url.pathname.slice(-1);
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const eventId = params.id;
   let res = await supaGetEventById(eventId);
   let data = res;
   return Response.json(data);

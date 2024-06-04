@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 
 import { CreateEventSidebar } from "@/components/CreateEventSidebar";
+import { useState } from "react";
 
 export const metadata: Metadata = {
   title: "Sidebar",
@@ -25,7 +26,12 @@ const sidebarNavItems = [
     complete: false,
   },
   {
-    title: "Time",
+    title: "Start Time",
+    complete: false,
+  },
+
+  {
+    title: "End Time",
     complete: false,
   },
 ];
@@ -38,11 +44,8 @@ export default function CreateEventLayout({
   children,
 }: CreateEventLayoutProps) {
   return (
-    <div className="flex">
-      <aside className="w-1/4 p-4 bg-secondary">
-        <CreateEventSidebar items={sidebarNavItems} />
-      </aside>
-      <main className="w-3/4">{children}</main>
+    <div>
+      <main>{children}</main>
     </div>
   );
 }

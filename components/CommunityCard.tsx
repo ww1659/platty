@@ -37,7 +37,7 @@ export default async function CommunityCard({
   }
 
   return (
-    <Card>
+    <Card className="w-[300px]">
       <CardHeader>
         <CardTitle className="flex flex-row justify-between items-center">
           <div className="flex">{name}</div>

@@ -2,12 +2,11 @@
 
 import EventCard from "@/components/EventCard";
 import { Event } from "@/types/Event";
-import { usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function EventPage() {
-  const pathname = usePathname();
-  const eventId = pathname.slice(-1);
+  const { id: eventId } = useParams();
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(false);
 

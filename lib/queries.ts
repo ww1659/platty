@@ -1,6 +1,7 @@
 import { createClient } from "@/supabase/server";
 import { Community } from "@/types/Community";
 import { Event } from "@/types/Event";
+import { EventFormValues } from "@/types/EventFormValues";
 
 type Userdata = {
   id: string;
@@ -20,6 +21,9 @@ type UserEvent = {
   inCalendar: boolean;
 };
 
+interface EventPostData extends EventFormValues {
+  userId: string;
+}
 // export async function getAllEvents() {
 //   return await prisma.event.findMany({});
 // }
@@ -374,6 +378,54 @@ export async function supaUpdateCalendarStatus(
       throw new Error(`Supabase error: ${error.message}`);
     }
     return { data: data, message: "calendar updated" };
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+
+export async function supaPostEvent(
+  eventData: EventPostData,
+  communityId: string
+) {
+  const supabase = createClient();
+  const userId = eventData.userId;
+
+  console.log(eventData.eventStartDate);
+  console.log(eventData.eventEndDate);
+
+  try {
+    const { data: eventPostData, error: eventPostError } = await supabase
+      .from("events")
+      .insert({
+        title: eventData.eventName,
+        tagline: eventData.eventTagline,
+        description: eventData.eventDescription,
+        price: eventData.eventPrice,
+        location: eventData.eventLocation,
+        start_time: eventData.eventStartDate,
+        end_time: eventData.eventEndDate,
+        image_url: eventData.eventImage,
+        community_id: communityId,
+      })
+      .select("id");
+
+    if (eventPostError) {
+      throw new Error(`Event Post error: ${eventPostError.message}`);
+    }
+
+    if (eventPostData) {
+      const eventId = eventPostData[0].id;
+      const { data: eventUserPostData, error: eventUserPostError } =
+        await supabase.from("events_users").insert({
+          event_id: eventId,
+          user_id: userId,
+        });
+
+      if (eventUserPostError) {
+        throw new Error(`Event User Post error: ${eventUserPostError.message}`);
+      }
+      return { data: eventUserPostData, message: "event created successfully" };
+    }
   } catch (error) {
     throw new Error(`Unknown error occurred: ${error}`);
   }
