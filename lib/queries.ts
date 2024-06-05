@@ -389,10 +389,6 @@ export async function supaPostEvent(
 ) {
   const supabase = createClient();
   const userId = eventData.userId;
-
-  console.log(eventData.eventStartDate);
-  console.log(eventData.eventEndDate);
-
   try {
     const { data: eventPostData, error: eventPostError } = await supabase
       .from("events")
@@ -426,6 +422,27 @@ export async function supaPostEvent(
       }
       return { data: eventUserPostData, message: "event created successfully" };
     }
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+
+export async function supaAddUserEvent(eventId: string, userId: string) {
+  const supabase = createClient();
+  try {
+    const { data: eventUserPostData, error: eventUserPostError } =
+      await supabase
+        .from("events_users")
+        .insert({
+          event_id: Number(eventId),
+          user_id: userId,
+        })
+        .select("*");
+
+    if (eventUserPostError) {
+      throw new Error(`Event Post error: ${eventUserPostError.message}`);
+    }
+    return { data: eventUserPostData, message: "event created successfully" };
   } catch (error) {
     throw new Error(`Unknown error occurred: ${error}`);
   }

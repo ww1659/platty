@@ -6,6 +6,7 @@ import { useAuth } from "@/context/UserContext";
 import { postGoogleCalendarEvent } from "@/lib/api";
 import { createClient } from "@/supabase/client";
 import { Event } from "@/types/Event";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 type UserEvent = {
@@ -28,13 +29,11 @@ export default function EventPage() {
         if (error || !userData?.user) {
           setLoading(false);
           console.log("No user:", error);
+          return;
         }
         const userId = userData.user?.id;
-        const response = await fetch(`/api/events/users/${userId}`);
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-        const eventData = await response.json();
+        const response = await axios.get(`/api/events/users/${userId}`);
+        const eventData = response.data;
         setUserEvents(eventData);
       } catch (error) {
         console.error("Error fetching event data:", error);
@@ -42,6 +41,7 @@ export default function EventPage() {
         setLoading(false);
       }
     };
+
     fetchEventsData();
   }, [supabase.auth]);
 
@@ -85,7 +85,6 @@ export default function EventPage() {
           userId: user.id,
         }),
       });
-      console.log(response, "IN PAGE");
 
       if (!response.ok) {
         const error = await response.json();

@@ -32,18 +32,14 @@ export async function supaLogin(formData: FormData) {
 
 export async function supaSignup(formData: FormData) {
   const supabase = createClient();
-
   const inputData = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
     firstName: formData.get("firstName") as string,
     lastName: formData.get("lastName") as string,
   };
-
   const { data, error: signupError } = await supabase.auth.signUp(inputData);
-
   const user = data.user;
-
   if (signupError || !user) {
     console.error("Signup error:", signupError);
     redirect("/error");

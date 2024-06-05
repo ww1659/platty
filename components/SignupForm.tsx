@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Icons } from "./Icons";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -27,7 +29,7 @@ const formSchema = z.object({
 
 export default function SignupForm() {
   const router = useRouter();
-
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,6 +41,7 @@ export default function SignupForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
@@ -47,47 +50,19 @@ export default function SignupForm() {
 
     try {
       await supaSignup(formData);
+      setLoading(false);
       router.push("/");
     } catch (error) {
       console.error("Signup failed:", error);
+      setLoading(false);
       router.push("/error");
     }
   }
 
   return (
-    <div className="border rounded-lg p-6">
-      <div className="mb-5">
-        <h3>Sign Up</h3>
-      </div>
+    <div className="grid gap-3">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 ">
-          <FormField
-            control={form.control}
-            name="firstName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="First Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Last Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 ">
           <FormField
             control={form.control}
             name="email"
@@ -95,7 +70,14 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Email address</FormLabel>
                 <FormControl>
-                  <Input placeholder="your.email@gmail.com" {...field} />
+                  <Input
+                    placeholder="name@example.com"
+                    type="email"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect="off"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,7 +96,36 @@ export default function SignupForm() {
               </FormItem>
             )}
           />
-          <Button type="submit">Sign Up</Button>
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="John" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full">
+            {loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+            Sign Up
+          </Button>
         </form>
       </Form>
     </div>

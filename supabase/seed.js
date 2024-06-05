@@ -40,6 +40,7 @@ const runSeed = async () => {
         user_id: eventUser.userId,
         event_id: eventUser.eventId,
         assigned_at: eventUser.assigned_at,
+        in_calendar: false,
       },
     ]);
 

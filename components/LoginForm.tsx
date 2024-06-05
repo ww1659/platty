@@ -15,6 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/supabase/client";
+import { useAuth } from "@/context/UserContext";
+import { Icons } from "./Icons";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -25,6 +28,14 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const router = useRouter();
+  const supabase = createClient();
+  const { session } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState<{
+    status: number | null | undefined;
+    msg: string | null;
+  }>({ status: null, msg: null });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,6 +45,7 @@ export default function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);
@@ -44,24 +56,59 @@ export default function LoginForm() {
 
     try {
       // await supaLogin(formData);
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      router.push("/");
+
+      if (authError) {
+        console.log(authError.message);
+        setLoading(false);
+        setLoginError({ status: authError.status, msg: authError.message });
+        return;
+      } else {
+        setLoading(false);
+        setLoginError({ status: null, msg: null });
+        router.push("/");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       router.push("/error");
+      setLoading(false);
     }
   }
 
+  const googleSignIn = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          scopes: "https://www.googleapis.com/auth/calendar",
+        },
+      });
+
+      if (error) {
+        console.error("Google sign in error:", error);
+        setLoading(false);
+        return;
+      }
+      setLoading(false);
+      console.log(data, "DATA");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="border rounded-lg p-6">
-      <div className="mb-5">
-        <h3>Log in</h3>
-      </div>
+    <div className="grid gap-3">
+      {loginError.status !== null && (
+        <p className="text-destructive text-sm font-bold">
+          Login Error: {loginError.msg}
+        </p>
+      )}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <FormField
             control={form.control}
             name="email"
@@ -69,7 +116,15 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Email address</FormLabel>
                 <FormControl>
-                  <Input placeholder="your.email@gmail.com" {...field} />
+                  <Input
+                    placeholder="name@example.com"
+                    type="email"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect="off"
+                    disabled={loading}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -82,15 +137,50 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="********" {...field} />
+                  <Input
+                    type="password"
+                    placeholder="********"
+                    disabled={loading}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Log in</Button>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+            Log in
+          </Button>
         </form>
       </Form>
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            Or continue with
+          </span>
+        </div>
+      </div>
+      <div className="flex items-center justify-center">
+        {session === null ? (
+          <Button
+            variant="secondary"
+            className="w-full"
+            disabled={loading}
+            onClick={() => googleSignIn()}
+          >
+            {loading ? (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Icons.google className="mr-2 h-4 w-4" />
+            )}
+            Google
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 }
