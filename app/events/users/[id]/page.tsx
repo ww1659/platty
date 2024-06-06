@@ -73,9 +73,6 @@ export default function EventPage() {
   return (
     <>
       <main className="flex min-h-screen flex-row items-start justify-start container">
-        {/* <aside className="w-1/5 border-r h-screen pt-4 sticky left-0 top-0">
-          BOOM
-        </aside> */}
         <div className="w-1/6 border-r h-screen pt-5">
           <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
             Communities

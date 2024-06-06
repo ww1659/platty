@@ -130,12 +130,19 @@ export async function supaGetEventById(eventId: string): Promise<Event | null> {
       throw new Error(`Supabase error: ${error.message}`);
     }
 
-    // If no data is returned, return null
     if (!data) {
       return null;
     }
 
-    // Convert the data to the Event type
+    const { count, error: countError } = await supabase
+      .from("events_users")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", eventId);
+
+    if (countError) {
+      console.error("Supabase error:", countError.message);
+    }
+
     const event: Event = {
       id: Number(data.id),
       title: data.title,
@@ -149,6 +156,7 @@ export async function supaGetEventById(eventId: string): Promise<Event | null> {
       price: parseFloat(data.price),
       tagline: data.tagline,
       communityId: data.community_id,
+      memberCount: count || 0,
     };
 
     return event;
