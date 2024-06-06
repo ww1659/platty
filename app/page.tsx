@@ -13,8 +13,8 @@ export default async function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-start justify-start">
-      <div className="container mt-5">
+    <main className="flex min-h-screen flex-col items-start justify-start container">
+      <div className="mt-5">
         <h3>Welcome</h3>
         <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
           {events.map((event) => (

@@ -20,7 +20,7 @@ interface CreateEventFormProps {
   setSidebarItems: Dispatch<SetStateAction<SidebarItems[]>>;
   step: number;
   setStep: Function;
-  communityId: string;
+  communityId: string | string[];
 }
 
 export function CreateEventForm({

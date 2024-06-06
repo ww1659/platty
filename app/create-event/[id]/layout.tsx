@@ -1,8 +1,5 @@
 import { Metadata } from "next";
 
-import { CreateEventSidebar } from "@/components/CreateEventSidebar";
-import { useState } from "react";
-
 export const metadata: Metadata = {
   title: "Sidebar",
   description: "Sidebar for managing the form state for creating a new event.",

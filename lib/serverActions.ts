@@ -3,7 +3,11 @@
 import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { supaCheckIsAdmin, supaGetCommunitiesWhereAdmin } from "./queries";
+import {
+  supaCheckIsAdmin,
+  supaGetCommunitiesWhereAdmin,
+  supaGetProfileByUserId,
+} from "./queries";
 
 export async function supaLogout() {
   const supabase = createClient();
@@ -66,4 +70,8 @@ export async function checkAdminStatus(userId: string): Promise<boolean> {
 
 export async function getCommunitiesForAdmins(userId: string) {
   return await supaGetCommunitiesWhereAdmin(userId);
+}
+
+export async function getProfileInfo(userId: string) {
+  return await supaGetProfileByUserId(userId);
 }

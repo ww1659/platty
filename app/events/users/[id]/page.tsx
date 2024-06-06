@@ -1,10 +1,9 @@
 "use client";
 
-import EventCard from "@/components/EventCard";
-import { Button } from "@/components/ui/button";
+import MyEventCard from "@/components/MyEventCard";
 import { useAuth } from "@/context/UserContext";
-import { postGoogleCalendarEvent } from "@/lib/api";
 import { createClient } from "@/supabase/client";
+import { Community } from "@/types/Community";
 import { Event } from "@/types/Event";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -17,17 +16,19 @@ type UserEvent = {
 
 export default function EventPage() {
   const [userEvents, setUserEvents] = useState<UserEvent[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communitiesLoading, setCommunitiesLoading] = useState(true);
   const supabase = createClient();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   useEffect(() => {
     const fetchEventsData = async () => {
-      setLoading(true);
+      setEventsLoading(true);
       try {
         const { data: userData, error } = await supabase.auth.getUser();
         if (error || !userData?.user) {
-          setLoading(false);
+          setEventsLoading(false);
           console.log("No user:", error);
           return;
         }
@@ -38,72 +39,29 @@ export default function EventPage() {
       } catch (error) {
         console.error("Error fetching event data:", error);
       } finally {
-        setLoading(false);
+        setEventsLoading(false);
       }
     };
 
     fetchEventsData();
   }, [supabase.auth]);
 
-  const createCalendarEvent = async (userEvent: UserEvent) => {
-    if (userEvent.inCalendar) {
-      console.log("Event is already in calendar!");
-      return;
-    }
+  // useEffect(() => {
+  //   const fetch communitiesData = async () {
+  //     setCommunitiesLoading(true);
+  //     try {
+  //          const userId = user?.id;
+  //       const response = await axios.get(`/api/events/users/${userId}`);
+  //       const eventData = response.data;
+  //       setUserEvents(eventData);
+  //     } catch (error) {
+  //       console.error("Error fetching event data:", error);
+  //     } finally {
+  //       setEventsLoading(false);
+  //     }
+  // }, [])
 
-    const session = await supabase.auth.getSession();
-    if (!session) {
-      throw new Error("User is not authenticated");
-    }
-
-    const googleEvent = {
-      summary: userEvent.eventData.title,
-      description: userEvent.eventData.description,
-      start: {
-        dateTime: userEvent.eventData.startTime,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      end: {
-        dateTime: userEvent.eventData.endTime,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-    };
-    const googleToken = session.data.session?.provider_token;
-    const googleResponse = await postGoogleCalendarEvent(
-      googleEvent,
-      googleToken
-    );
-
-    if (googleResponse.status === "confirmed" && user) {
-      const response = await fetch(`/api/events/users/${user.id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          eventId: userEvent.eventData.id,
-          userId: user.id,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        console.error("Error updating inCalendar status:", error);
-      } else {
-        console.log("UserEvent inCalendar status updated successfully");
-
-        setUserEvents((currentEvents) =>
-          (currentEvents || []).map((event) =>
-            event.eventData.id === userEvent.eventData.id
-              ? { ...event, inCalendar: true }
-              : event
-          )
-        );
-      }
-    }
-  };
-
-  if (loading)
+  if (eventsLoading)
     return (
       <main className="flex min-h-screen flex-col items-start justify-start">
         <div className="container mt-5">
@@ -113,37 +71,54 @@ export default function EventPage() {
     );
 
   return (
-    <main className="flex min-h-screen flex-col items-start justify-start">
-      <div className="container mt-5">
-        <h3>Hello. This is {user?.email} events page.</h3>
-        <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
-          {userEvents &&
-            userEvents.map((userEvent) => (
-              <div key={userEvent.eventData.id}>
-                <EventCard
-                  key={userEvent.eventData.id}
-                  eventTitle={userEvent.eventData.title}
-                  eventDescription={userEvent.eventData.description}
-                  eventLocation={userEvent.eventData.location}
-                  startTime={userEvent.eventData.startTime}
-                  endTime={userEvent.eventData.endTime}
-                  eventImage={userEvent.eventData.imageUrl}
-                  eventPrice={parseFloat(userEvent.eventData.price.toString())}
-                />
-                {userEvent.inCalendar ? (
-                  <p>In calendar!</p>
-                ) : (
-                  <Button
-                    onClick={() => createCalendarEvent(userEvent)}
-                    key={`button-${userEvent.eventData.id}`}
-                  >
-                    Create Calendar Event
-                  </Button>
-                )}
-              </div>
+    <>
+      <main className="flex min-h-screen flex-row items-start justify-start container">
+        {/* <aside className="w-1/5 border-r h-screen pt-4 sticky left-0 top-0">
+          BOOM
+        </aside> */}
+        <div className="w-1/6 border-r h-screen pt-5">
+          <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
+            Communities
+          </h4>
+          {/* <div className="grid grid-flow-row auto-rows-max text-sm">
+            {communities.map((community) => (
+              <p className="group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline font-medium text-foreground">
+                {community.name}
+              </p>
             ))}
+          </div> */}
         </div>
-      </div>
-    </main>
+        <div className="w-5/6 pt-5 container">
+          <h3>Hello. This is {profile?.firstName}&apos;s events page.</h3>
+          <div className="flex justify-center flex-col flex-wrap gap-5 mt-5">
+            {userEvents &&
+              userEvents.map((userEvent) => (
+                <div key={userEvent.eventData.id}>
+                  <MyEventCard
+                    key={userEvent.eventData.id}
+                    id={userEvent.eventData.id}
+                    title={userEvent.eventData.title}
+                    tagline={userEvent.eventData.tagline}
+                    description={userEvent.eventData.description}
+                    location={userEvent.eventData.location}
+                    startTime={userEvent.eventData.startTime}
+                    endTime={userEvent.eventData.endTime}
+                    imageUrl={userEvent.eventData.imageUrl}
+                    price={userEvent.eventData.price}
+                    createdAt={userEvent.eventData.createdAt}
+                    updatedAt={userEvent.eventData.updatedAt}
+                    communityId={userEvent.eventData.communityId}
+                    memberCount={userEvent.eventData.memberCount}
+                    inCalendar={userEvent.inCalendar}
+                    assignedAt={userEvent.assignedAt}
+                    userEvents={userEvents}
+                    setUserEvents={setUserEvents}
+                  />
+                </div>
+              ))}
+          </div>
+        </div>
+      </main>
+    </>
   );
 }

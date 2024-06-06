@@ -1,9 +1,11 @@
 import { supaGetEventsByUserId, supaUpdateCalendarStatus } from "@/lib/queries";
+import { NextRequest } from "next/server";
 
-export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const splitUrl = url.pathname.split("/");
-  const userId = splitUrl[splitUrl.length - 1];
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const userId = params.id;
   let res = await supaGetEventsByUserId(userId);
   let data = res;
   return Response.json(data);

@@ -8,11 +8,12 @@ import {
 } from "react";
 import { createClient } from "@/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
-import { supaCheckIsAdmin } from "@/lib/queries";
-import { checkAdminStatus } from "@/lib/serverActions";
+import { checkAdminStatus, getProfileInfo } from "@/lib/serverActions";
+import { Profile } from "@/types/Profile";
 
 type UserContextType = {
   user: User | null | undefined;
+  profile: Profile | null;
   session: Session | null;
   isAdmin: boolean;
   login: (formData: FormData) => Promise<void>;
@@ -21,6 +22,7 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType>({
   user: null,
+  profile: null,
   session: null,
   isAdmin: false,
   login: () => Promise.resolve(),
@@ -30,6 +32,7 @@ const UserContext = createContext<UserContextType>({
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const supabase = createClient();
   const [user, setUser] = useState<User>();
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,8 +50,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (session?.user) {
         const isAdmin = await checkAdminStatus(session.user.id);
         setIsAdmin(isAdmin);
-      }
+        const { profileData } = await getProfileInfo(session?.user.id);
 
+        if (profileData && profileData.length > 0) {
+          const profileInfo = profileData[0];
+          setProfile({
+            firstName: profileInfo.first_name,
+            lastName: profileInfo.last_name,
+            memberSince: profileInfo.created_at,
+          });
+        }
+      }
       setIsLoading(false);
     };
 
@@ -76,7 +88,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, session, isAdmin, login, logout }}>
+    <UserContext.Provider
+      value={{ user, profile, session, isAdmin, login, logout }}
+    >
       {!isLoading && children}
     </UserContext.Provider>
   );

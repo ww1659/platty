@@ -11,4 +11,5 @@ export type Event = {
   price: number;
   tagline: string;
   communityId: string;
+  memberCount?: number;
 };
