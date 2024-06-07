@@ -58,7 +58,7 @@ export async function supaGetAllEvents() {
 
     // Convert the data to the Event type
     const events: Event[] = data.map((event: any) => ({
-      id: Number(event.id),
+      id: event.id,
       title: event.title,
       description: event.description,
       location: event.location,
@@ -117,9 +117,24 @@ export async function supaGetCommunityById(communityId: string) {
   }
 }
 
-export async function supaGetEventById(eventId: string): Promise<Event | null> {
+export async function supaGetEventByEventId(
+  eventId: string,
+  userId: string
+): Promise<UserEvent | null> {
   const supabase = createClient();
+
   try {
+    const { data: eventUsersData, error: eventUsersError } = await supabase
+      .from("events_users")
+      .select("assigned_at, in_calendar")
+      .eq("event_id", eventId)
+      .eq("user_id", userId)
+      .single();
+
+    if (eventUsersError) {
+      console.error("Error fetching event user data:", eventUsersError.message);
+    }
+
     const { data, error } = await supabase
       .from("events")
       .select("*")
@@ -143,20 +158,24 @@ export async function supaGetEventById(eventId: string): Promise<Event | null> {
       console.error("Supabase error:", countError.message);
     }
 
-    const event: Event = {
-      id: Number(data.id),
-      title: data.title,
-      description: data.description,
-      location: data.location,
-      startTime: new Date(data.start_time),
-      endTime: new Date(data.end_time),
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at),
-      imageUrl: data.image_url,
-      price: parseFloat(data.price),
-      tagline: data.tagline,
-      communityId: data.community_id,
-      memberCount: count || 0,
+    const event: UserEvent = {
+      eventData: {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        location: data.location,
+        startTime: new Date(data.start_time),
+        endTime: new Date(data.end_time),
+        createdAt: new Date(data.created_at),
+        updatedAt: new Date(data.updated_at),
+        imageUrl: data.image_url,
+        price: parseFloat(data.price),
+        tagline: data.tagline,
+        communityId: data.community_id,
+        memberCount: count || 0,
+      },
+      assignedAt: new Date(eventUsersData?.assigned_at),
+      inCalendar: eventUsersData?.in_calendar,
     };
 
     return event;
@@ -216,7 +235,7 @@ export async function supaGetEventsByUserId(
 
         return {
           eventData: {
-            id: Number(event.id),
+            id: event.id,
             title: event.title,
             description: event.description,
             location: event.location,
@@ -454,7 +473,7 @@ export async function supaAddUserEvent(eventId: string, userId: string) {
       await supabase
         .from("events_users")
         .insert({
-          event_id: Number(eventId),
+          event_id: eventId,
           user_id: userId,
         })
         .select("*");

@@ -1,12 +1,12 @@
 [
   {
     "userId": "988b26a1-c469-45d5-86a9-f714e1171f90",
-    "eventId": 1,
+    "eventId": "47aef3d3-d19a-43df-b95e-8564288a0912",
     "assigned_at": "2024-05-19T00:00:00Z"
   },
   {
     "userId": "988b26a1-c469-45d5-86a9-f714e1171f90",
-    "eventId": 2,
+    "eventId": "95ff68b6-2350-49d7-9fa8-a9eaf46c1f5a",
     "assigned_at": "2024-05-22T00:00:00Z"
   }
 ]

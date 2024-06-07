@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": " NODE_ENV=local node utils/supabase/seed.js"
+    "seed": " NODE_ENV=local node supabase/seed.js"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/dev-seed.ts"
