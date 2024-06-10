@@ -10,16 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { useAuth } from "@/context/UserContext";
 import { UserEvent } from "@/types/UserEvent";
 import axios from "axios";
 import { CheckIcon, PlusIcon } from "lucide-react";
+import Link from "next/link";
 
 interface AddEventDialogProps {
   event: UserEvent;
@@ -28,9 +24,7 @@ interface AddEventDialogProps {
 
 export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
   const { user } = useAuth();
-
-  function handleClick() {
-    console.log("click!!");
+  async function handleFreeClick() {
     const userId = user?.id;
     const data = {
       userId,
@@ -42,7 +36,7 @@ export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
         .then((response) => {
           console.log("Event added successfully:", response.data);
 
-          setEvent((currentEvent) => {
+          setEvent((currentEvent: any) => {
             if (currentEvent) {
               return {
                 ...currentEvent,
@@ -74,7 +68,25 @@ export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
             Sign up to this event here. This will add the event to the &apos;My
             Events&apos; page.
           </DialogDescription>
-          <Button onClick={handleClick}>Add Event</Button>
+          {event.eventData.price === 0 ? (
+            <Button onClick={handleFreeClick}>Add Free Event</Button>
+          ) : (
+            <div>
+              <Link
+                href={{
+                  pathname: `/checkout/${event.eventData.id}`,
+                  query: {
+                    price: event.eventData.price,
+                    name: event.eventData.title,
+                  },
+                }}
+              >
+                <Button className="w-full">
+                  Add Event £{event.eventData.price}
+                </Button>
+              </Link>
+            </div>
+          )}
         </DialogHeader>
         <DialogFooter className="sm:justify-start"></DialogFooter>
       </DialogContent>
