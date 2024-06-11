@@ -28,23 +28,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabase = createClient();
-  const [user, setUser] = useState<User>();
-  const [loading, setLoading] = useState(true);
+  // const [user, setUser] = useState<User>();
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error fetching user data:", error);
-        setUser(undefined);
-      } else {
-        setUser(data?.user);
-      }
-      setLoading(false);
-    };
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const { data, error } = await supabase.auth.getUser();
+  //     if (error) {
+  //       console.error("Error fetching user data:", error);
+  //       setUser(undefined);
+  //     } else {
+  //       setUser(data?.user);
+  //     }
+  //     setLoading(false);
+  //   };
 
-    getUser();
-  }, [supabase.auth]);
+  //   getUser();
+  // }, [supabase.auth]);
 
   return (
     <html lang="en" suppressHydrationWarning={true}>
@@ -61,7 +61,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {!loading && user && <Navbar />}
+            <Navbar />
             {children}
           </ThemeProvider>
         </UserProvider>

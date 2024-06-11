@@ -22,6 +22,10 @@ export default function Navbar({
     router.push("/login");
   };
 
+  if (user === undefined) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 bg-background w-full z-50 border-b">
       <div className="container flex h-14 max-w-screen-2xl items-center">
