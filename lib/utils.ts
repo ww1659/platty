@@ -36,6 +36,11 @@ export function formatDateShort(dateInput: Date) {
   return formattedDate;
 }
 
+export function formatDateTimeOnly(dateInput: Date) {
+  const formattedDate = format(new Date(dateInput), "HH:mm");
+  return formattedDate;
+}
+
 export function formatDateLong(dateInput: Date) {
   const date = new Date(dateInput);
   return format(date, `EEEE, dd MMMM, yyyy, h:mm a`);

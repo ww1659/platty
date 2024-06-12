@@ -55,7 +55,6 @@ export default function LoginForm() {
     const password = formData.get("password") as string;
 
     try {
-      // await supaLogin(formData);
       const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,

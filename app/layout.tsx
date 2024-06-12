@@ -6,10 +6,9 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/context/theme-provider";
 import Navbar from "@/components/Navbar";
-import { UserProvider, useAuth } from "@/context/UserContext";
-import { useEffect, useState } from "react";
+import { UserProvider } from "@/context/UserContext";
 import { createClient } from "@/supabase/client";
-import { User } from "@supabase/supabase-js";
+import { Toaster } from "@/components/ui/toaster";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -63,6 +62,7 @@ export default function RootLayout({
           >
             <Navbar />
             {children}
+            <Toaster />
           </ThemeProvider>
         </UserProvider>
       </body>

@@ -24,29 +24,8 @@ type UserEvent = {
 interface EventPostData extends EventFormValues {
   userId: string;
 }
-// export async function getAllEvents() {
-//   return await prisma.event.findMany({});
-// }
 
-// export async function getEventById(eventId: string) {
-//   return await prisma.event.findUnique({
-//     where: {
-//       id: parseInt(eventId),
-//     },
-//   });
-// }
-
-// export async function getEventsByUserId(userId: string) {
-//   return await prisma.eventUser.findMany({
-//     where: {
-//       userId: userId,
-//     },
-//     include: {
-//       event: true,
-//     },
-//   });
-// }
-
+//GET QUERIES
 export async function supaGetAllEvents() {
   const supabase = createClient();
   try {
@@ -354,9 +333,9 @@ export async function supaCheckIsAdmin(userId: string): Promise<boolean> {
     if (error) {
       throw new Error(`Supabase error: ${error.message}`);
     }
-
-    if (data[0].is_admin) return true;
-    else return false;
+    if (data.length === 0) {
+      return false;
+    } else return true;
   } catch (error) {
     throw new Error(`Unknown error occurred: ${error}`);
   }
@@ -402,6 +381,64 @@ export async function supaGetCommunitiesWhereAdmin(userId: string) {
   }
 }
 
+export async function supaGetCommunitiesByUserId(userId: string) {
+  const supabase = createClient();
+
+  try {
+    const { data: userCommunityData, error: userCommunityError } =
+      await supabase
+        .from("communities_users")
+        .select("community_id")
+        .eq("user_id", userId);
+
+    if (userCommunityError) {
+      throw new Error(`Supabase UC error: ${userCommunityError.message}`);
+    }
+
+    if (!userCommunityData || userCommunityData.length === 0) {
+      return { status: 200, msg: "User is not in any communities" };
+    }
+
+    if (userCommunityData) {
+      const communityIds = userCommunityData.map(
+        (userCommunity) => userCommunity.community_id
+      );
+
+      const { data: communityData, error: communityError } = await supabase
+        .from("communities")
+        .select("*")
+        .in("id", communityIds);
+
+      if (communityError) {
+        throw new Error(`Supabase error: ${communityError.message}`);
+      }
+
+      return { communities: communityData };
+    }
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+
+export async function supaGetProfileByUserId(userId: string) {
+  const supabase = createClient();
+
+  try {
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("first_name, last_name, created_at")
+      .eq("id", userId);
+
+    if (profileError) {
+      throw new Error(`Supabase Profile error: ${profileError.message}`);
+    } else {
+      return { profileData: profileData };
+    }
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+//UPDATE QUERIES
 export async function supaUpdateCalendarStatus(
   eventId: number,
   userId: string
@@ -422,6 +459,7 @@ export async function supaUpdateCalendarStatus(
   }
 }
 
+//POST QUERIES
 export async function supaPostEvent(
   eventData: EventPostData,
   communityId: string
@@ -482,64 +520,6 @@ export async function supaAddUserEvent(eventId: string, userId: string) {
       throw new Error(`Event Post error: ${eventUserPostError.message}`);
     }
     return { data: eventUserPostData, message: "event created successfully" };
-  } catch (error) {
-    throw new Error(`Unknown error occurred: ${error}`);
-  }
-}
-
-export async function supaGetCommunitiesByUserId(userId: string) {
-  const supabase = createClient();
-
-  try {
-    const { data: userCommunityData, error: userCommunityError } =
-      await supabase
-        .from("communities_users")
-        .select("community_id")
-        .eq("user_id", userId);
-
-    if (userCommunityError) {
-      throw new Error(`Supabase UC error: ${userCommunityError.message}`);
-    }
-
-    if (!userCommunityData || userCommunityData.length === 0) {
-      return { status: 200, msg: "User is not in any communities" };
-    }
-
-    if (userCommunityData) {
-      const communityIds = userCommunityData.map(
-        (userCommunity) => userCommunity.community_id
-      );
-
-      const { data: communityData, error: communityError } = await supabase
-        .from("communities")
-        .select("*")
-        .in("id", communityIds);
-
-      if (communityError) {
-        throw new Error(`Supabase error: ${communityError.message}`);
-      }
-
-      return { communities: communityData };
-    }
-  } catch (error) {
-    throw new Error(`Unknown error occurred: ${error}`);
-  }
-}
-
-export async function supaGetProfileByUserId(userId: string) {
-  const supabase = createClient();
-
-  try {
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("first_name, last_name, created_at")
-      .eq("id", userId);
-
-    if (profileError) {
-      throw new Error(`Supabase Profile error: ${profileError.message}`);
-    } else {
-      return { profileData: profileData };
-    }
   } catch (error) {
     throw new Error(`Unknown error occurred: ${error}`);
   }

@@ -4,7 +4,7 @@ export type EventFormValues = {
   eventDescription: string;
   eventPrice: number;
   eventLocation: string;
-  eventStartDate: Date;
-  eventEndDate: Date;
+  eventStartDate: Date | undefined;
+  eventEndDate: Date | undefined;
   eventImage: string;
 };

@@ -15,6 +15,9 @@ import { EventTaglineInput } from "./CreateEventFormInputs/EventTaglineInput";
 import { EventPriceInput } from "./CreateEventFormInputs/EventPriceInput";
 import { createClient } from "@/supabase/client";
 import { useAuth } from "@/context/UserContext";
+import EventCard from "./EventCard";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 interface CreateEventFormProps {
   setSidebarItems: Dispatch<SetStateAction<SidebarItems[]>>;
@@ -29,6 +32,8 @@ export function CreateEventForm({
   setStep,
   communityId,
 }: CreateEventFormProps) {
+  const { toast } = useToast();
+  const router = useRouter();
   const { user } = useAuth();
   const [eventFormValues, setEventFormValues] = useState<EventFormValues>({
     eventName: "",
@@ -36,8 +41,8 @@ export function CreateEventForm({
     eventDescription: "",
     eventPrice: 0.0,
     eventLocation: "",
-    eventStartDate: new Date(),
-    eventEndDate: new Date(),
+    eventStartDate: undefined,
+    eventEndDate: undefined,
     eventImage: "",
   });
 
@@ -47,18 +52,35 @@ export function CreateEventForm({
       ...eventFormValues,
       userId,
     };
-    console.log(eventData);
 
     try {
       axios
         .post(`/api/create-event/${communityId}`, eventData)
         .then((response) => {
           console.log("Event created successfully:", response.data);
-          // Reset form values or navigate to another page
+          toast({
+            title: "Event Created",
+            description: `New event created for ${communityId}`,
+          });
+          setEventFormValues({
+            eventName: "",
+            eventTagline: "",
+            eventDescription: "",
+            eventPrice: 0.0,
+            eventLocation: "",
+            eventStartDate: new Date(),
+            eventEndDate: new Date(),
+            eventImage: "",
+          });
+          router.push("/");
         })
         .catch((error) => {
           console.error("Error creating event:", error);
-          // Handle error
+          toast({
+            variant: "destructive",
+            title: "Event Creation Failed",
+            description: `Couldn't create event: ${error}`,
+          });
         });
     } catch (error) {
       console.error(error);
@@ -109,6 +131,7 @@ export function CreateEventForm({
       )}
       {step === 5 && (
         <EventTimingsInput
+          value={eventFormValues}
           setValue={setEventFormValues}
           step={step}
           setStep={setStep}
@@ -127,16 +150,38 @@ export function CreateEventForm({
 
       {step === 7 && (
         <div>
-          <p>{eventFormValues.eventName}</p>
-          <p>{eventFormValues.eventTagline}</p>
-          <p>{eventFormValues.eventDescription}</p>
-          <p>{eventFormValues.eventPrice}</p>
-          <p>{eventFormValues.eventLocation}</p>
-          <p>{eventFormValues.eventStartDate.toLocaleDateString()}</p>
-          <p>{eventFormValues.eventEndDate.toLocaleDateString()}</p>
-          <p>{eventFormValues.eventImage}</p>
-
-          {<Button onClick={handleCreateEvent}>Create Event</Button>}
+          <div className="flex flex-row justify-start gap-5">
+            <div className="">
+              <h5 className="mb-2 font-bold underline">Event Card</h5>
+              <EventCard
+                eventTitle={eventFormValues.eventName}
+                eventDescription={eventFormValues.eventDescription}
+                eventLocation={eventFormValues.eventLocation}
+                startTime={eventFormValues.eventStartDate}
+                endTime={eventFormValues.eventEndDate}
+                eventImage={eventFormValues.eventImage}
+                eventPrice={parseFloat(eventFormValues.eventPrice.toString())}
+              />
+            </div>
+            <div className="">
+              <h5 className="mb-2 font-bold underline">Key Details</h5>
+              <div className="flex flex-col border rounded-lg">
+                <code>Event Name: {eventFormValues.eventName}</code>
+                <code>
+                  Start Time:{" "}
+                  {eventFormValues.eventStartDate.toLocaleDateString()}
+                </code>
+                <code>
+                  End Time: {eventFormValues.eventEndDate.toLocaleDateString()}
+                </code>
+                <code>Price: £{eventFormValues.eventPrice}</code>
+                <code>Location: {eventFormValues.eventLocation}</code>
+              </div>
+            </div>
+          </div>
+          <Button onClick={handleCreateEvent} className="w-full mt-5">
+            Create Event
+          </Button>
         </div>
       )}
     </>
