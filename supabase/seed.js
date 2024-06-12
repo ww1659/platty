@@ -1,5 +1,5 @@
-const events = require("../prisma/dev-data/events.json");
-const eventsUsers = require("../prisma/dev-data/events_users.json");
+const events = require("./dev-data/events.json");
+const eventsUsers = require("./dev-data/events_users.json");
 const { createClient } = require("@supabase/supabase-js");
 require("dotenv").config();
 

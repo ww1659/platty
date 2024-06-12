@@ -41,7 +41,7 @@ export default function CheckOutPage() {
       console.error("Error fetching client secret:", error);
       throw error;
     }
-  }, [name, price, user]);
+  }, [name, price, user, eventId]);
 
   const options = { fetchClientSecret };
 

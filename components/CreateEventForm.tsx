@@ -168,11 +168,11 @@ export function CreateEventForm({
               <div className="flex flex-col border rounded-lg">
                 <code>Event Name: {eventFormValues.eventName}</code>
                 <code>
-                  Start Time:{" "}
-                  {eventFormValues.eventStartDate.toLocaleDateString()}
+                  Start Time:
+                  {eventFormValues.eventStartDate?.toLocaleDateString()}
                 </code>
                 <code>
-                  End Time: {eventFormValues.eventEndDate.toLocaleDateString()}
+                  End Time: {eventFormValues.eventEndDate?.toLocaleDateString()}
                 </code>
                 <code>Price: £{eventFormValues.eventPrice}</code>
                 <code>Location: {eventFormValues.eventLocation}</code>

@@ -14,8 +14,8 @@ type EventCardProps = {
   eventTitle: string;
   eventDescription: string;
   eventLocation: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: Date | undefined;
+  endTime: Date | undefined;
   eventImage: string;
   eventPrice: number;
 };
@@ -50,7 +50,9 @@ export default function EventCard({
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-1">
-        <p className="text-sm font-bold">{formatDate(startTime)}</p>
+        {startTime && (
+          <p className="text-sm font-bold">{formatDate(startTime)}</p>
+        )}
         <p className="text-sm font-light">{eventLocation}</p>
       </CardContent>
       <CardFooter className="pb-1">
