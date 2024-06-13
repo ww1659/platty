@@ -45,6 +45,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const setData = async () => {
       try {
+        setIsLoading(true);
+
         const {
           data: { session },
           error,
@@ -56,7 +58,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user);
 
         if (session?.user) {
-          const isAdmin = await checkAdminStatus(session.user.id);
+          const isAdmin = await checkAdminStatus(session?.user.id);
           setIsAdmin(isAdmin);
           const { profileData } = await getProfileInfo(session?.user.id);
 
@@ -69,22 +71,24 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             });
           }
         }
-        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
         setIsLoading(false);
       }
     };
+
+    setData();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user || null);
-        setIsLoading(false);
+        if (session?.user) {
+          setData();
+        }
       }
     );
-
-    setData();
 
     return () => {
       authListener?.subscription.unsubscribe();

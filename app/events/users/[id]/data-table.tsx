@@ -65,7 +65,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center pb-4">
         <Input
           placeholder="Filter by event name..."
           value={
@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({
               .getColumn("eventData_title")
               ?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm mt-0"
         />
       </div>
 

@@ -29,13 +29,19 @@ interface EventPostData extends EventFormValues {
 export async function supaGetAllEvents() {
   const supabase = createClient();
   try {
-    const { data, error } = await supabase.from("events").select("*");
+    const today = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .gt("start_time", today)
+      .order("start_time", { ascending: true });
 
     if (error) {
-      throw new Error(`Supabase error: ${error.message}`);
+      console.error("Error fetching events:", error);
+      return [];
     }
 
-    // Convert the data to the Event type
     const events: Event[] = data.map((event: any) => ({
       id: event.id,
       title: event.title,

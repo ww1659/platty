@@ -127,9 +127,9 @@ export default function EventPage() {
         </div>
         <div className="w-5/6 pt-5 h-screen overflow-auto">
           <div className="container flex flex-row justify-between">
-            <h3 className="rounded-md text-md font-semibold">
+            {/* <h3 className="rounded-md text-md font-semibold">
               {profile?.firstName}&apos;s Events
-            </h3>
+            </h3> */}
             {/* <Tabs defaultValue="account">
               <TabsList>
                 <TabsTrigger value="account">List View</TabsTrigger>

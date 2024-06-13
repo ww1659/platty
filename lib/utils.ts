@@ -64,3 +64,7 @@ export function calculateDuration(start: Date, end: Date) {
 
   return { days, hours, minutes, seconds };
 }
+
+export function capitaliseFirstLetter(word: string) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}

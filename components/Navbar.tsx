@@ -5,12 +5,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { useAuth } from "@/context/UserContext";
 import { CreateEventDialog } from "./CreateEventDialog";
+import { Badge } from "./ui/badge";
+import { DarkModeToggle } from "./DarkModeToggle";
 
 export default function Navbar({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { user, isLoading, logout, isAdmin } = useAuth();
+  const { user, isLoading, logout, isAdmin, profile } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -19,7 +21,7 @@ export default function Navbar({
     router.push("/login");
   };
 
-  if (user === undefined || isLoading) {
+  if (user === undefined || user === null || isLoading) {
     return null;
   }
 
@@ -31,7 +33,7 @@ export default function Navbar({
             href="/"
             className={cn("transition-colors hover:text-foreground/80")}
           >
-            <h3> Platty</h3>
+            <h3 className="leading-loose">Platty</h3>
           </Link>
 
           <nav
@@ -80,7 +82,9 @@ export default function Navbar({
             {user && isAdmin && <CreateEventDialog userId={user.id} />}
           </nav>
         </div>
-        <div className="flex ml-auto">
+        <div className="flex flex-row items-center gap-5 ml-auto">
+          {user && <code>u/{profile?.firstName}</code>}
+          <DarkModeToggle />
           {user ? (
             <Button size="sm" onClick={handleLogout}>
               Logout

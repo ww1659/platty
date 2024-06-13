@@ -31,20 +31,19 @@ export default function EventCard({
 }: EventCardProps) {
   return (
     <Card className="w-[280px]">
-      <div className="bg/70">
+      <div className="w-[280px] h-[186.9px] relative">
         {eventImage && (
           <Image
             className="flex-1 rounded-t-lg"
             src={eventImage}
             alt={eventTitle}
-            width={280}
-            height="0"
+            fill={true}
             priority={true}
           />
         )}
       </div>
       <CardHeader className="pb-3 min-h-50 max-h-80">
-        <CardTitle className="line-clamp-2 pb-1">{eventTitle}</CardTitle>
+        <CardTitle className="line-clamp-1 pb-0.5">{eventTitle}</CardTitle>
         <CardDescription className="line-clamp-2">
           {eventDescription}
         </CardDescription>
