@@ -1,7 +1,11 @@
 "use client";
 
 import { AddEventDialog } from "@/components/AddEventDialog";
+import { Icons } from "@/components/Icons";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
   TooltipContent,
@@ -11,28 +15,30 @@ import {
 import { useAuth } from "@/context/UserContext";
 import {
   calculateDuration,
-  formatDate,
   formatDateLong,
   formatDateShort,
 } from "@/lib/utils";
-import { Event } from "@/types/Event";
 import { UserEvent } from "@/types/UserEvent";
 import axios from "axios";
-import { CheckIcon, HeartIcon, PlusIcon } from "lucide-react";
+import { HeartIcon } from "lucide-react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function EventPage() {
   const { id: eventId } = useParams();
-  const { user } = useAuth();
+  const { user, authError } = useAuth();
   const [event, setEvent] = useState<UserEvent | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  if (authError || !user) {
+    router.push("/error");
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-
       try {
         const response = await axios.get(`/api/events/${eventId}`, {
           params: { userId: user?.id },
@@ -50,50 +56,44 @@ export default function EventPage() {
     }
   }, [eventId, user]);
 
-  function handleClick() {
-    console.log("click!!");
-    const userId = user?.id;
-    const data = {
-      userId,
-    };
-
-    try {
-      axios
-        .post(`/api/events/${eventId}`, data)
-        .then((response) => {
-          console.log("Event added successfully:", response.data);
-
-          setEvent((currentEvent) => {
-            if (currentEvent) {
-              return {
-                ...currentEvent,
-                assignedAt: new Date(),
-              };
-            }
-            return currentEvent;
-          });
-        })
-        .catch((error) => {
-          console.error("Error creating event:", error);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   function handleFavouritesClick() {
     console.log("added to favourites");
   }
 
   if (loading)
     return (
-      <div>
-        <p>Loading</p>
+      <div className="flex min-h-screen flex-col items-start justify-start">
+        <div className="container mt-5 max-w-4xl">
+          <div className="w-full">
+            <Skeleton className="h-[200px] rounded-xl" />
+          </div>
+          <div className="mt-5">
+            <div className="flex flex-row justify-between items-center">
+              <div>
+                <Skeleton className="h-4 w-[250px]" />
+              </div>
+              <div>
+                <div className="flex flex-row">
+                  <Skeleton className="h-10 w-10 m-1" />
+                  <Skeleton className="h-10 w-10 m-1" />
+                </div>
+              </div>
+            </div>
+            <div>
+              <Skeleton className="h-10 w-[400px] my-1" />
+              <Skeleton className="h-4 w-[250px] my-3" />
+            </div>
+            <div className="flex flex-col justify-center items-center mt-10">
+              <Icons.spinner className="h-6 w-6 animate-spin" />
+            </div>
+          </div>
+        </div>
       </div>
     );
 
   return (
     <main className="flex min-h-screen flex-col items-start justify-start">
+      <div className="flex items-center space-x-2"></div>
       {event && (
         <div className="container mt-5 max-w-4xl">
           <div className="flex flex-col">

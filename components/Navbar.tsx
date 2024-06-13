@@ -1,28 +1,25 @@
 "use client";
-
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { useAuth } from "@/context/UserContext";
 import { CreateEventDialog } from "./CreateEventDialog";
-// import { supaLogout } from "@/lib/actions";
 
 export default function Navbar({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, isLoading, logout, isAdmin } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = async () => {
-    // await supaLogout(); //server
-    logout(); //client
+    logout();
     router.push("/login");
   };
 
-  if (user === undefined) {
+  if (user === undefined || isLoading) {
     return null;
   }
 
