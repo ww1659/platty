@@ -28,7 +28,29 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const router = useRouter();
+
   const supabase = createClient();
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session && session.provider_token) {
+      window.localStorage.setItem(
+        "oauth_provider_token",
+        session.provider_token
+      );
+    }
+
+    if (session && session.provider_refresh_token) {
+      window.localStorage.setItem(
+        "oauth_provider_refresh_token",
+        session.provider_refresh_token
+      );
+    }
+
+    if (event === "SIGNED_OUT") {
+      window.localStorage.removeItem("oauth_provider_token");
+      window.localStorage.removeItem("oauth_provider_refresh_token");
+    }
+  });
+
   const { session } = useAuth();
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<{
@@ -80,22 +102,18 @@ export default function LoginForm() {
   const googleSignIn = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      // Initiate OAuth2 sign-in with Google
+      await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           scopes: "https://www.googleapis.com/auth/calendar",
+          redirectTo: window.location.href,
         },
       });
-
-      if (error) {
-        console.error("Google sign in error:", error);
-        setLoading(false);
-        return;
-      }
-      setLoading(false);
-      console.log(data, "DATA");
     } catch (error) {
-      console.log(error);
+      console.error("Google sign in error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 

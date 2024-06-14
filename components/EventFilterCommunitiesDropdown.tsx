@@ -19,12 +19,22 @@ import {
 import axios from "axios";
 import { useAuth } from "@/context/UserContext";
 import { Community } from "@/types/Community";
+import { Icons } from "./Icons";
 
-export function EventCommunityFilterDropdown() {
-  const [userCommunities, setUserCommunities] = React.useState<Community[]>([]);
+interface CommunityFilterProps {
+  value: string;
+  setValue: Function;
+}
+
+export function EventCommunityFilterDropdown({
+  value,
+  setValue,
+}: CommunityFilterProps) {
+  const [userCommunities, setUserCommunities] = React.useState<
+    Community[] | []
+  >([]);
   const [communitiesLoading, setCommunitiesLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
   const { user } = useAuth();
 
   React.useEffect(() => {
@@ -44,9 +54,13 @@ export function EventCommunityFilterDropdown() {
     fetchCommunitiesData();
   }, [user]);
 
-  const communities = userCommunities.map((community) => {
-    return { value: community.id, label: community.name };
-  });
+  let communities: any[] = [];
+
+  if (userCommunities) {
+    communities = userCommunities.map((community) => {
+      return { value: community.id, label: community.name };
+    });
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -82,7 +96,11 @@ export function EventCommunityFilterDropdown() {
                       value === community.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {community.label}
+                  {communitiesLoading ? (
+                    <Icons.spinner className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <p>{community.label}</p>
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>

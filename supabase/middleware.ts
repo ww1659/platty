@@ -54,27 +54,14 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  try {
-    const { data, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-    if (error) {
-      console.error("Error fetching user session:", error);
-      return response;
-    }
-
-    const user = data?.user;
-
-    if (!user) {
-      if (request.nextUrl.pathname.startsWith("/sign-up")) {
-        return response;
-      } else if (!request.nextUrl.pathname.startsWith("/login")) {
-        return NextResponse.redirect(new URL("/login", request.url));
-      }
-    }
-
-    return response;
-  } catch (error) {
-    console.error("Error updating session:", error);
-    return response;
+  if (error || !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
   }
 }

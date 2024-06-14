@@ -30,9 +30,13 @@ const filters = [
   },
 ];
 
-export function EventFilterDateDropdown() {
+interface DateFilterProps {
+  value: string;
+  setValue: Function;
+}
+
+export function EventFilterDateDropdown({ value, setValue }: DateFilterProps) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

@@ -26,7 +26,7 @@ export default function EventPage() {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [communitiesLoading, setCommunitiesLoading] = useState(true);
   const supabase = createClient();
-  const { user, profile } = useAuth();
+  const { user, profile, providers } = useAuth();
 
   useEffect(() => {
     const fetchEventsData = async () => {

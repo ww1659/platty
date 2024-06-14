@@ -26,16 +26,35 @@ interface EventPostData extends EventFormValues {
 }
 
 //GET QUERIES
-export async function supaGetAllEvents() {
+export async function supaGetAllEvents(
+  communityFilter: string | null,
+  priceFilter: string | null,
+  searchQuery: string | null
+) {
+  console.log(searchQuery);
+
   const supabase = createClient();
   try {
     const today = new Date().toISOString();
 
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .gt("start_time", today)
-      .order("start_time", { ascending: true });
+    let query = supabase.from("events").select("*").gt("start_time", today);
+
+    if (communityFilter) {
+      query = query.eq("community_id", communityFilter);
+    }
+    if (priceFilter) {
+      priceFilter === "ascending"
+        ? (query = query.order("price", { ascending: true }))
+        : (query = query.order("price", { ascending: false }));
+    }
+    if (!priceFilter) {
+      query = query.order("start_time", { ascending: true });
+    }
+    if (searchQuery) {
+      query = query.ilike("title", `%${searchQuery}%`);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Error fetching events:", error);

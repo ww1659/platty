@@ -3,15 +3,30 @@
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/context/theme-provider";
+import { ThemeProvider } from "@/context/ThemeContext";
 import Navbar from "@/components/Navbar";
-import { UserProvider } from "@/context/UserContext";
+import { UserProvider, useAuth } from "@/context/UserContext";
 import { Toaster } from "@/components/ui/toaster";
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
+
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
+
+  return (
+    <>
+      {user && <Navbar />}
+      {children}
+    </>
+  );
+};
 
 export default function RootLayout({
   children,
@@ -33,8 +48,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
-            {children}
+            <AppLayout>{children}</AppLayout>
             <Toaster />
           </ThemeProvider>
         </UserProvider>

@@ -15,6 +15,7 @@ type UserContextType = {
   user: User | null | undefined;
   profile: Profile | null;
   session: Session | null;
+  providers: String[] | [];
   authError: AuthError | null;
   isAdmin: boolean;
   isLoading: boolean;
@@ -26,6 +27,7 @@ const UserContext = createContext<UserContextType>({
   user: null,
   profile: null,
   session: null,
+  providers: [],
   authError: null,
   isAdmin: false,
   isLoading: true,
@@ -39,6 +41,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
+  const [providers, setProviders] = useState<string[]>([]);
   const [authError, setAuthError] = useState<AuthError | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -46,7 +49,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const setData = async () => {
       try {
         setIsLoading(true);
-
         const {
           data: { session },
           error,
@@ -56,6 +58,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         }
         setSession(session);
         setUser(session?.user);
+
+        const { data: userData, error: userError } =
+          await supabase.auth.getUser();
+
+        if (!userError) {
+          const userProviders = userData.user.app_metadata.providers;
+          setProviders(userProviders);
+        }
 
         if (session?.user) {
           const isAdmin = await checkAdminStatus(session?.user.id);
@@ -109,6 +119,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         user,
         profile,
         session,
+        providers,
         isAdmin,
         authError,
         isLoading,
