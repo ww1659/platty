@@ -19,7 +19,7 @@ import Link from "next/link";
 
 interface CreateEventDialogProps {
   userId: string;
-  siteAdmin: boolean;
+  siteAdmin: boolean | undefined;
 }
 
 export function CreateEventDialog({

@@ -1,4 +1,4 @@
-import { supaGetAllEvents } from "@/lib/queries";
+import { supaGetAllEvents, supaGetAllValidEvents } from "@/lib/queries";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -7,11 +7,13 @@ export async function GET(request: NextRequest) {
   const priceFilter = searchParams.get("price");
   const searchQuery = searchParams.get("search");
   const dateQuery = searchParams.get("month");
-  const res = await supaGetAllEvents(
+  const userId = searchParams.get("userId");
+  const res = await supaGetAllValidEvents(
     communityFilter,
     priceFilter,
     searchQuery,
-    dateQuery
+    dateQuery,
+    userId
   );
   const data = res;
   return Response.json(data);

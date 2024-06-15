@@ -40,13 +40,93 @@ export async function supaGetAllEvents(
   searchQuery: string | null,
   dateQuery: string | null
 ) {
-  console.log(searchQuery);
-
   const supabase = createClient();
   try {
     const today = new Date().toISOString();
 
     let query = supabase.from("events").select("*").gt("start_time", today);
+
+    if (communityFilter) {
+      query = query.eq("community_id", communityFilter);
+    }
+    if (priceFilter) {
+      priceFilter === "ascending"
+        ? (query = query.order("price", { ascending: true }))
+        : (query = query.order("price", { ascending: false }));
+    }
+    if (!priceFilter) {
+      query = query.order("start_time", { ascending: true });
+    }
+    if (searchQuery) {
+      query = query.ilike("title", `%${searchQuery}%`);
+    }
+
+    if (dateQuery) {
+      const { startDate, endDate } = getMonthDateRange(dateQuery);
+      query = query.gte("start_time", startDate).lt("start_time", endDate);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Error fetching events:", error);
+      return [];
+    }
+
+    const events: Event[] = data.map((event: any) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      startTime: new Date(event.start_time),
+      endTime: new Date(event.end_time),
+      createdAt: new Date(event.created_at),
+      updatedAt: new Date(event.updated_at),
+      imageUrl: event.image_url,
+      price: parseFloat(event.price),
+      tagline: event.tagline,
+      communityId: event.community_id,
+    }));
+
+    return events;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(`Error fetching events: ${error.message}`);
+    } else {
+      throw new Error(`Unknown error occurred: ${error}`);
+    }
+  }
+}
+
+export async function supaGetAllValidEvents(
+  communityFilter: string | null,
+  priceFilter: string | null,
+  searchQuery: string | null,
+  dateQuery: string | null,
+  userId: string | null
+) {
+  const supabase = createClient();
+
+  try {
+    const { data: communityData, error: communityError } = await supabase
+      .from("communities_users")
+      .select("community_id")
+      .eq("user_id", userId);
+
+    if (communityError) {
+      throw new Error(`Supabase error: ${communityError.message}`);
+    }
+
+    const communityIds = communityData.map(
+      (community) => community.community_id
+    );
+
+    const today = new Date().toISOString();
+    let query = supabase
+      .from("events")
+      .select("*")
+      .gt("start_time", today)
+      .or(`community_id.in.(${communityIds.join(",")}),community_id.is.null`);
 
     if (communityFilter) {
       query = query.eq("community_id", communityFilter);
@@ -436,7 +516,7 @@ export async function supaGetCommunitiesByUserId(userId: string) {
     }
 
     if (!userCommunityData || userCommunityData.length === 0) {
-      return { status: 200, msg: "User is not in any communities" };
+      return { communities: [], msg: "User is not in any communities" };
     }
 
     if (userCommunityData) {

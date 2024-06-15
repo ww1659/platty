@@ -24,35 +24,15 @@ import { Icons } from "./Icons";
 interface CommunityFilterProps {
   value: string;
   setValue: Function;
+  userCommunities: Community[] | [];
 }
 
 export function EventCommunityFilterDropdown({
   value,
   setValue,
+  userCommunities,
 }: CommunityFilterProps) {
-  const [userCommunities, setUserCommunities] = React.useState<
-    Community[] | []
-  >([]);
-  const [communitiesLoading, setCommunitiesLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const { user } = useAuth();
-
-  React.useEffect(() => {
-    const fetchCommunitiesData = async () => {
-      setCommunitiesLoading(true);
-      try {
-        const userId = user?.id;
-        const response = await axios.get(`/api/communities/users/${userId}`);
-        const communitiesData = response.data.communities;
-        setUserCommunities(communitiesData);
-      } catch (error) {
-        console.error("Error fetching communities data:", error);
-      } finally {
-        setCommunitiesLoading(false);
-      }
-    };
-    fetchCommunitiesData();
-  }, [user]);
 
   let communities: any[] = [];
 
@@ -96,11 +76,7 @@ export function EventCommunityFilterDropdown({
                       value === community.value ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {communitiesLoading ? (
-                    <Icons.spinner className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <p>{community.label}</p>
-                  )}
+                  {community.label}
                 </CommandItem>
               ))}
             </CommandGroup>

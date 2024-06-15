@@ -12,11 +12,16 @@ import { EventFilterDateDropdown } from "@/components/EventFilterDateDropdown";
 import { EventPriceFilterDropdown } from "@/components/EventFilterPriceDropdown";
 import { EventCommunityFilterDropdown } from "@/components/EventFilterCommunitiesDropdown";
 import { Input } from "@/components/ui/input";
+import { Community } from "@/types/Community";
 const lodash = require("lodash");
 
 export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [eventsLoading, setEventsLoading] = useState(true);
+
+  const [userCommunities, setUserCommunities] = useState<Community[] | []>([]);
+  const [communitiesLoading, setCommunitiesLoading] = useState(true);
+
   const { user } = useAuth();
   const [dateFilter, setDateFilter] = useState("");
   const [communityFilter, setCommunityFilter] = useState("");
@@ -41,6 +46,7 @@ export default function HomePage() {
           }
 
           const params = new URLSearchParams();
+          params.append("userId", user.id);
           if (communityFilter) params.append("community", communityFilter);
           if (priceFilter) params.append("price", priceFilter);
           if (dateFilter) params.append("month", dateFilter);
@@ -64,6 +70,23 @@ export default function HomePage() {
     fetchEventsData(dateFilter, communityFilter, priceFilter, searchQuery);
   }, [dateFilter, communityFilter, priceFilter, searchQuery, fetchEventsData]);
 
+  useEffect(() => {
+    const fetchCommunitiesData = async () => {
+      setCommunitiesLoading(true);
+      try {
+        const userId = user?.id;
+        const response = await axios.get(`/api/communities/users/${userId}`);
+        const communitiesData = response.data.communities;
+        setUserCommunities(communitiesData);
+      } catch (error) {
+        console.error("Error fetching communities data:", error);
+      } finally {
+        setCommunitiesLoading(false);
+      }
+    };
+    fetchCommunitiesData();
+  }, [user]);
+
   return (
     <main className="flex min-h-screen flex-col items-start justify-start container">
       <div className="flex flex-row w-full justify-between items-center mt-5 mt-5 pb-3 mb-5 border-b">
@@ -73,16 +96,18 @@ export default function HomePage() {
             value={priceFilter}
             setValue={setPriceFilter}
           />
-          <EventCommunityFilterDropdown
-            value={communityFilter}
-            setValue={setCommunityFilter}
-          />
           <EventFilterDateDropdown
             value={dateFilter}
             setValue={setDateFilter}
           />
+          {communitiesLoading || userCommunities.length === 0 ? null : (
+            <EventCommunityFilterDropdown
+              value={communityFilter}
+              setValue={setCommunityFilter}
+              userCommunities={userCommunities}
+            />
+          )}
         </div>
-
         <div className="flex flex-row gap-5">
           <Input
             value={searchQuery}
