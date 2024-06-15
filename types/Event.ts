@@ -12,4 +12,5 @@ export type Event = {
   tagline: string;
   communityId: string;
   memberCount?: number;
+  admin?: string;
 };

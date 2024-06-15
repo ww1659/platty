@@ -15,6 +15,7 @@ export type UserEvent = {
     tagline: string;
     communityId: string;
     memberCount?: number;
+    admin?: string;
   };
   assignedAt: Date;
   inCalendar: boolean;

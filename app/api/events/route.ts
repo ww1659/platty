@@ -6,7 +6,13 @@ export async function GET(request: NextRequest) {
   const communityFilter = searchParams.get("community");
   const priceFilter = searchParams.get("price");
   const searchQuery = searchParams.get("search");
-  const res = await supaGetAllEvents(communityFilter, priceFilter, searchQuery);
+  const dateQuery = searchParams.get("month");
+  const res = await supaGetAllEvents(
+    communityFilter,
+    priceFilter,
+    searchQuery,
+    dateQuery
+  );
   const data = res;
   return Response.json(data);
 }

@@ -1,4 +1,8 @@
-import { supaAddUserEvent, supaGetEventByEventId } from "@/lib/queries";
+import {
+  supaAddUserEvent,
+  supaGetEventByEventId,
+  supaGetProfileByUserId,
+} from "@/lib/queries";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -19,13 +23,28 @@ export async function GET(
 
   try {
     const event = await supaGetEventByEventId(eventId, userId);
-
     if (!event) {
       return NextResponse.json({ status: 404, error: "Error not found" });
-    } else return NextResponse.json({ status: 200, eventData: event });
+    } else {
+      const adminId = event.eventData.admin;
+      if (!adminId) {
+        return NextResponse.json({ status: 400, error: "Admin ID is missing" });
+      }
+
+      const admin = await supaGetProfileByUserId(adminId);
+      const profile = {
+        firstName: admin.profileData[0].first_name,
+        lastName: admin.profileData[0].last_name,
+      };
+      return NextResponse.json({
+        status: 200,
+        eventData: event,
+        adminData: profile,
+      });
+    }
   } catch (error) {
     console.error(error);
-    NextResponse.json({ status: 500, error: "Internal Server Error" });
+    return NextResponse.json({ status: 500, error: "Internal Server Error" });
   }
 }
 

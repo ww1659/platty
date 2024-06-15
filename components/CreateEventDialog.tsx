@@ -19,9 +19,13 @@ import Link from "next/link";
 
 interface CreateEventDialogProps {
   userId: string;
+  siteAdmin: boolean;
 }
 
-export function CreateEventDialog({ userId }: CreateEventDialogProps) {
+export function CreateEventDialog({
+  userId,
+  siteAdmin,
+}: CreateEventDialogProps) {
   const [communities, setCommunities] = useState<Community[]>([]);
 
   useEffect(() => {
@@ -43,11 +47,22 @@ export function CreateEventDialog({ userId }: CreateEventDialogProps) {
         <DialogHeader>
           <DialogTitle>Create a new Event</DialogTitle>
           <DialogDescription>
-            Select a community to create an event for. Only community admins can
-            create events.
+            Select a community to create an event for. Only site or community
+            admins can create events.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-wrap items-center justify-center m-1">
+          {siteAdmin && (
+            <DialogClose asChild>
+              <Link href="/create-event/all" className="m-1">
+                <CommunityDialogCard
+                  id="all"
+                  name="platty-all"
+                  description="All members in your Organisation"
+                />
+              </Link>
+            </DialogClose>
+          )}
           {communities &&
             communities.map((community) => (
               <DialogClose asChild key={community.id}>

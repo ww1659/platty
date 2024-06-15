@@ -48,7 +48,7 @@ export function EventPriceFilterDropdown({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="justify-between"
         >
           {value
             ? filters.find((filter) => filter.value === value)?.label

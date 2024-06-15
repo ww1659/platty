@@ -69,7 +69,7 @@ export function EventCommunityFilterDropdown({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="justify-between"
         >
           {value
             ? communities.find((community) => community.value === value)?.label

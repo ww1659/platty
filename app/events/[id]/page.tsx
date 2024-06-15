@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/UserContext";
 import {
   calculateDuration,
@@ -25,10 +26,16 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+type Admin = {
+  firstName: string;
+  lastName: string;
+};
+
 export default function EventPage() {
   const { id: eventId } = useParams();
   const { user, authError } = useAuth();
   const [event, setEvent] = useState<UserEvent | null>(null);
+  const [admin, setAdmin] = useState<Admin | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -44,6 +51,7 @@ export default function EventPage() {
           params: { userId: user?.id },
         });
         setEvent(response.data.eventData);
+        setAdmin(response.data.adminData);
       } catch (error) {
         console.error("Error fetching event data:", error);
       } finally {
@@ -91,8 +99,10 @@ export default function EventPage() {
       </div>
     );
 
+  console.log(admin);
+
   return (
-    <main className="flex min-h-screen flex-col items-start justify-start">
+    <main className="flex min-h-screen flex-col items-start justify-start pb-20">
       <div className="flex items-center space-x-2"></div>
       {event && (
         <div className="container mt-5 max-w-4xl">
@@ -179,6 +189,18 @@ export default function EventPage() {
                       {event.eventData.description}
                     </span>
                   </h4>
+                </div>
+              </div>
+
+              <div className="mt-10">
+                <div>
+                  <h3>Event Organiser</h3>
+                </div>
+                <div className="mt-5">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src="" />
+                    <AvatarFallback>{admin?.firstName}</AvatarFallback>
+                  </Avatar>
                 </div>
               </div>
             </div>

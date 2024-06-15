@@ -13,8 +13,18 @@ export async function GET(
       { status: 400 }
     );
   }
+
+  if (communityId === "all") {
+    return NextResponse.json({
+      id: "all",
+      name: "platty-all",
+      description: "All members in your Organisation",
+    });
+  }
+
   try {
     const res = await supaGetCommunityById(communityId);
+
     return NextResponse.json(res);
   } catch (error) {
     if (error instanceof Error) {

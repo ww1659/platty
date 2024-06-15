@@ -12,7 +12,7 @@ export default function Navbar({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { user, isLoading, logout, isAdmin, profile } = useAuth();
+  const { user, isLoading, logout, communityAdmin, profile } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -21,9 +21,11 @@ export default function Navbar({
     router.push("/login");
   };
 
-  // if (user === undefined || user === null || isLoading) {
-  //   return null;
-  // }
+  if (user === undefined || user === null || isLoading) {
+    return null;
+  }
+
+  const siteAdmin = profile?.isSiteAdmin;
 
   return (
     <header className="sticky top-0 bg-background w-full z-50 border-b">
@@ -79,7 +81,9 @@ export default function Navbar({
                 Communities
               </Link>
             )}
-            {user && isAdmin && <CreateEventDialog userId={user.id} />}
+            {user && (communityAdmin || siteAdmin) && (
+              <CreateEventDialog userId={user.id} siteAdmin={siteAdmin} />
+            )}
           </nav>
         </div>
         <div className="flex flex-row items-center gap-5 ml-auto">

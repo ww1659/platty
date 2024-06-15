@@ -21,12 +21,52 @@ import {
 
 const filters = [
   {
-    value: "ascending",
-    label: "Ascending",
+    value: "01",
+    label: "January",
   },
   {
-    value: "descending",
-    label: "Descending",
+    value: "02",
+    label: "February",
+  },
+  {
+    value: "03",
+    label: "March",
+  },
+  {
+    value: "04",
+    label: "April",
+  },
+  {
+    value: "05",
+    label: "May",
+  },
+  {
+    value: "06",
+    label: "June",
+  },
+  {
+    value: "07",
+    label: "July",
+  },
+  {
+    value: "08",
+    label: "August",
+  },
+  {
+    value: "09",
+    label: "September",
+  },
+  {
+    value: "10",
+    label: "October",
+  },
+  {
+    value: "11",
+    label: "November",
+  },
+  {
+    value: "12",
+    label: "December",
   },
 ];
 
@@ -45,11 +85,11 @@ export function EventFilterDateDropdown({ value, setValue }: DateFilterProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="justify-between"
         >
           {value
             ? filters.find((filter) => filter.value === value)?.label
-            : "Filter by date"}
+            : "Filter by month"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

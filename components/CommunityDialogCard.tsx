@@ -22,7 +22,11 @@ export default function CommunityDialogCard({
           <div className="flex">{name}</div>
           <div className="flex">
             <div className="mx-1">
-              {<Badge className="hover:bg-0">Admin</Badge>}
+              {id === "all" ? (
+                <Badge className="hover:bg-0">Site Admin</Badge>
+              ) : (
+                <Badge className="hover:bg-0">Admin</Badge>
+              )}
             </div>
           </div>
         </CardTitle>

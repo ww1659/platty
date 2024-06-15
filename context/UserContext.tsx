@@ -17,7 +17,7 @@ type UserContextType = {
   session: Session | null;
   providers: String[] | [];
   authError: AuthError | null;
-  isAdmin: boolean;
+  communityAdmin: boolean;
   isLoading: boolean;
   login: (formData: FormData) => Promise<void>;
   logout: () => void;
@@ -29,7 +29,7 @@ const UserContext = createContext<UserContextType>({
   session: null,
   providers: [],
   authError: null,
-  isAdmin: false,
+  communityAdmin: false,
   isLoading: true,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
@@ -39,7 +39,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [communityAdmin, setCommunityAdmin] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [providers, setProviders] = useState<string[]>([]);
   const [authError, setAuthError] = useState<AuthError | null>(null);
@@ -68,16 +68,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (session?.user) {
-          const isAdmin = await checkAdminStatus(session?.user.id);
-          setIsAdmin(isAdmin);
-          const { profileData } = await getProfileInfo(session?.user.id);
+          const isCommunityAdmin = await checkAdminStatus(session?.user.id);
+          setCommunityAdmin(isCommunityAdmin);
 
+          const { profileData } = await getProfileInfo(session?.user.id);
           if (profileData && profileData.length > 0) {
             const profileInfo = profileData[0];
             setProfile({
               firstName: profileInfo.first_name,
               lastName: profileInfo.last_name,
               memberSince: profileInfo.created_at,
+              isSiteAdmin: profileInfo.site_admin,
             });
           }
         }
@@ -120,7 +121,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         profile,
         session,
         providers,
-        isAdmin,
+        communityAdmin,
         authError,
         isLoading,
         login,

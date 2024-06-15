@@ -2,6 +2,14 @@ import { createClient } from "@/supabase/server";
 import { Community } from "@/types/Community";
 import { Event } from "@/types/Event";
 import { EventFormValues } from "@/types/EventFormValues";
+import { startOfMonth, endOfMonth, parseISO, formatISO } from "date-fns";
+
+function getMonthDateRange(month: string) {
+  const year = new Date().getFullYear();
+  const startDate = parseISO(`${year}-${month}-01`);
+  const endDate = endOfMonth(startDate);
+  return { startDate: formatISO(startDate), endDate: formatISO(endDate) };
+}
 
 type Userdata = {
   id: string;
@@ -29,7 +37,8 @@ interface EventPostData extends EventFormValues {
 export async function supaGetAllEvents(
   communityFilter: string | null,
   priceFilter: string | null,
-  searchQuery: string | null
+  searchQuery: string | null,
+  dateQuery: string | null
 ) {
   console.log(searchQuery);
 
@@ -52,6 +61,11 @@ export async function supaGetAllEvents(
     }
     if (searchQuery) {
       query = query.ilike("title", `%${searchQuery}%`);
+    }
+
+    if (dateQuery) {
+      const { startDate, endDate } = getMonthDateRange(dateQuery);
+      query = query.gte("start_time", startDate).lt("start_time", endDate);
     }
 
     const { data, error } = await query;
@@ -177,6 +191,7 @@ export async function supaGetEventByEventId(
         tagline: data.tagline,
         communityId: data.community_id,
         memberCount: count || 0,
+        admin: data.admin,
       },
       assignedAt: new Date(eventUsersData?.assigned_at),
       inCalendar: eventUsersData?.in_calendar,
@@ -451,7 +466,7 @@ export async function supaGetProfileByUserId(userId: string) {
   try {
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
-      .select("first_name, last_name, created_at")
+      .select("first_name, last_name, created_at, site_admin")
       .eq("id", userId);
 
     if (profileError) {
@@ -491,20 +506,40 @@ export async function supaPostEvent(
 ) {
   const supabase = createClient();
   const userId = eventData.userId;
+  let newEvent = {};
+
+  if (communityId === "all") {
+    newEvent = {
+      title: eventData.eventName,
+      tagline: eventData.eventTagline,
+      description: eventData.eventDescription,
+      price: eventData.eventPrice,
+      location: eventData.eventLocation,
+      start_time: eventData.eventStartDate,
+      end_time: eventData.eventEndDate,
+      image_url: eventData.eventImage,
+      community_id: null,
+      admin: userId,
+    };
+  } else {
+    newEvent = {
+      title: eventData.eventName,
+      tagline: eventData.eventTagline,
+      description: eventData.eventDescription,
+      price: eventData.eventPrice,
+      location: eventData.eventLocation,
+      start_time: eventData.eventStartDate,
+      end_time: eventData.eventEndDate,
+      image_url: eventData.eventImage,
+      community_id: communityId,
+      admin: userId,
+    };
+  }
+
   try {
     const { data: eventPostData, error: eventPostError } = await supabase
       .from("events")
-      .insert({
-        title: eventData.eventName,
-        tagline: eventData.eventTagline,
-        description: eventData.eventDescription,
-        price: eventData.eventPrice,
-        location: eventData.eventLocation,
-        start_time: eventData.eventStartDate,
-        end_time: eventData.eventEndDate,
-        image_url: eventData.eventImage,
-        community_id: communityId,
-      })
+      .insert(newEvent)
       .select("id");
 
     if (eventPostError) {
