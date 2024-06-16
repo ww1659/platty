@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { Community } from "@/types/Community";
 import CommunityDialogCard from "./CommunityDialogCard";
 import Link from "next/link";
+import axios from "axios";
 
 interface CreateEventDialogProps {
   userId: string;
@@ -27,16 +28,23 @@ export function CreateEventDialog({
   siteAdmin,
 }: CreateEventDialogProps) {
   const [communities, setCommunities] = useState<Community[]>([]);
+  const [communitiesLoading, setCommunitiesLoading] = useState(true);
 
   useEffect(() => {
-    const getCommunities = async () => {
-      const response = await getCommunitiesForAdmins(userId);
-      if (response && response.communities) {
-        setCommunities(response?.communities);
+    const fetchCommunitiesData = async () => {
+      setCommunitiesLoading(true);
+      try {
+        const response = await axios.get(`/api/communities/users/${userId}`);
+        const communitiesData = response.data.communities;
+        setCommunities(communitiesData);
+      } catch (error) {
+        console.error("Error fetching communities data:", error);
+      } finally {
+        setCommunitiesLoading(false);
       }
     };
-    getCommunities();
-  }, [userId]);
+    fetchCommunitiesData();
+  }, []);
 
   return (
     <Dialog>

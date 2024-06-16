@@ -62,12 +62,12 @@ export default function HomePage() {
       },
       300
     ),
-    [user]
+    []
   );
 
   useEffect(() => {
     fetchEventsData(dateFilter, communityFilter, priceFilter, searchQuery);
-  }, [dateFilter, communityFilter, priceFilter, searchQuery, fetchEventsData]);
+  }, [dateFilter, communityFilter, priceFilter, searchQuery]);
 
   useEffect(() => {
     const fetchCommunitiesData = async () => {
@@ -84,7 +84,7 @@ export default function HomePage() {
       }
     };
     fetchCommunitiesData();
-  }, [user]);
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-start justify-start container">

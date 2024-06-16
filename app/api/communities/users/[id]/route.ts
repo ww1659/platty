@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const userId = params.id;
-  let res = await supaGetCommunitiesByUserId(userId);
-  let data = res;
+  const res = await supaGetCommunitiesByUserId(userId);
+  const data = res;
   return Response.json(data);
 }

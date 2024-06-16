@@ -376,20 +376,42 @@ export async function supaFindUserByEmail(email: string) {
   return data;
 }
 
-export async function supaGetAllCommunities() {
+export async function supaGetAllCommunities(userId: string | null) {
   const supabase = createClient();
   try {
-    const { data, error } = await supabase.from("communities").select("*");
+    const { data: communityData, error: communityError } = await supabase
+      .from("communities")
+      .select("*");
 
-    if (error) {
-      throw new Error(`Supabase error: ${error.message}`);
+    if (communityError) {
+      throw new Error(`Supabase error: ${communityError.message}`);
     }
 
-    const communities: Community[] = data.map((community: Community) => ({
-      id: community.id,
-      name: community.name,
-      description: community.description,
-    }));
+    const { data: userCommunityData, error: userCommunityError } =
+      await supabase
+        .from("communities_users")
+        .select("community_id, is_admin")
+        .eq("user_id", userId);
+
+    if (userCommunityError) {
+      throw new Error(`Supabase error: ${userCommunityError.message}`);
+    }
+
+    const communities = communityData.map((community) => {
+      const isMember = userCommunityData.some(
+        (userCommunity) => userCommunity.community_id === community.id
+      );
+      const isAdmin = userCommunityData.some(
+        (userCommunity) =>
+          userCommunity.community_id === community.id && userCommunity.is_admin
+      );
+
+      return {
+        ...community,
+        member: isMember,
+        admin: isAdmin,
+      };
+    });
 
     return communities;
   } catch (error: unknown) {

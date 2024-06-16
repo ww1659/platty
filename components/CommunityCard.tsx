@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -14,63 +15,69 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Check, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { Community } from "@/types/Community";
-import { createClient } from "@/supabase/server";
-import { supaCheckIsAdmin, supaGetCommunityMembers } from "@/lib/queries";
+export type CommunityInfo = {
+  id: string;
+  name: string;
+  description: string;
+  member: boolean;
+  admin: boolean;
+};
 
-export default async function CommunityCard({
+export default function CommunityCard({
   id,
   name,
   description,
-}: Community) {
-  const supabase = createClient();
-  const { data, error } = await supabase.auth.getUser();
-  const userId = data.user?.id;
-  const communityMembers = await supaGetCommunityMembers(id);
-  const inCommunity = communityMembers?.userData.some(
-    (user) => user.id === userId
-  );
-  let isAdmin = false;
-  if (userId) {
-    isAdmin = await supaCheckIsAdmin(userId);
-  }
+  member,
+  admin,
+}: CommunityInfo) {
+  // const communityMembers = await supaGetCommunityMembers(id);
+  // const inCommunity = communityMembers?.userData.some(
+  //   (user) => user.id === userId
+  // );
+  // let isAdmin = false;
+  // if (userId) {
+  //   isAdmin = await supaCheckIsAdmin(userId);
+  // }
 
   return (
-    <Card className="w-[300px]">
+    <Card className="w-[350px]">
       <CardHeader>
         <CardTitle className="flex flex-row justify-between items-center">
-          <div className="flex">{name}</div>
-          <div className="flex">
-            <div> {inCommunity && <Badge>Member</Badge>}</div>
-            <div className="mx-1"> {isAdmin && <Badge>Admin</Badge>}</div>
+          <div>{name}</div>
+          <div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger
+                  className="rounded-lg bg-black dark:bg-white disabled:pointer-events-none disabled:opacity-50"
+                  disabled={member}
+                  onClick={() => {
+                    console.log("Send notification to Admin");
+                  }}
+                >
+                  {member ? (
+                    <Check className="text-white dark:text-black p-1 w-8 h-8" />
+                  ) : (
+                    <Plus className="text-white dark:text-black p-1 w-8 h-8" />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {member ? <p>Already a member</p> : <p>Request to Join</p>}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent>
-        Number of Members: {communityMembers?.numberOfMembers}
-      </CardContent>
       <CardFooter>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger className="rounded-lg bg-black">
-              {inCommunity ? (
-                // <Button className="rounded-full" size="icon">
-                <Check className="text-white p-1" />
-              ) : (
-                // </Button>
-                // <Button className="rounded-full" variant="default" size="icon">
-                <Plus />
-                // </Button>
-              )}
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              {inCommunity ? <p>Already a member</p> : <p>Request to Join</p>}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="flex flex-row justify-start gap-2 items-center">
+          {member && <Badge variant="secondary">Member</Badge>}
+          {admin && <Badge variant="secondary"> Admin</Badge>}
+        </div>
       </CardFooter>
+      {/* <CardContent>Number of Members: 12</CardContent> */}
     </Card>
   );
 }
