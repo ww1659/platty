@@ -107,7 +107,7 @@ export default function LoginForm() {
         provider: "google",
         options: {
           scopes: "https://www.googleapis.com/auth/calendar",
-          redirectTo: window.location.origin, // or the desired redirect URL
+          redirectTo: window.location.origin,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
