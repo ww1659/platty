@@ -7,6 +7,9 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import Navbar from "@/components/Navbar";
 import { UserProvider, useAuth } from "@/context/UserContext";
 import { Toaster } from "@/components/ui/toaster";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -15,6 +18,20 @@ const fontSans = FontSans({
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
+  const [urlValid, setUrlValid] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+    if ((pathname === "/login" || pathname === "/sign-up") && user) {
+      router.push("/");
+    } else {
+      setUrlValid(true);
+    }
+  }, [pathname, user, isLoading, router]);
 
   if (isLoading) {
     return null;
@@ -23,7 +40,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       {user && <Navbar />}
-      {children}
+      {urlValid && children}
     </>
   );
 };

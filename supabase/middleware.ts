@@ -59,9 +59,21 @@ export async function updateSession(request: NextRequest) {
     error,
   } = await supabase.auth.getUser();
 
+  const { pathname } = request.nextUrl;
+
   if (error || !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+    // User is not authenticated
+    if (pathname !== "/login" && pathname !== "/sign-up") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+  } else {
+    // User is authenticated
+    if (pathname === "/login" || pathname === "/sign-up") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
   }
 }

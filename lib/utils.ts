@@ -7,6 +7,7 @@ import {
   differenceInSeconds,
   format,
 } from "date-fns";
+import axios from "axios";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -68,3 +69,40 @@ export function calculateDuration(start: Date, end: Date) {
 export function capitaliseFirstLetter(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
+
+// Function to refresh access token using refresh token
+export const refreshAccessToken = async (
+  refreshToken: string | null | undefined
+) => {
+  try {
+    const response = await axios.post("https://oauth2.googleapis.com/token", {
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      client_secret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
+      refresh_token: refreshToken,
+      grant_type: "refresh_token",
+    });
+
+    console.log(response, "REFRESH RESPONSE");
+
+    const newAccessToken = response.data.access_token;
+    window.localStorage.setItem("oauth_provider_token", newAccessToken);
+
+    return newAccessToken;
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    throw new Error("Failed to refresh access token");
+  }
+};
+
+// Function to check if token is valid
+export const validateAccessToken = async (token: string | null | undefined) => {
+  try {
+    const response = await axios.get(
+      `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`
+    );
+    console.log(response, "VALIDATE RESPONSE");
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+};

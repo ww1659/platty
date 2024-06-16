@@ -2,16 +2,18 @@
 
 import { CreateEventForm } from "@/components/CreateEventForm";
 import { CreateEventSidebar } from "@/components/CreateEventSidebar";
+import { useAuth } from "@/context/UserContext";
 import { Community } from "@/types/Community";
 import { SidebarItems } from "@/types/SidebarItems";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { redirect, useParams } from "next/navigation";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 export default function CreateEventPage() {
   const { id: communityId } = useParams();
   const [step, setStep] = useState(0);
   const [community, setCommunity] = useState<Community>();
   const [loading, setLoading] = useState(false);
+  const { communityAdmin, profile } = useAuth();
   const [sidebarItems, setSidebarItems] = useState<SidebarItems[]>([
     {
       title: "Name",
@@ -67,6 +69,16 @@ export default function CreateEventPage() {
       fetchCommunityData();
     }
   }, [communityId]);
+
+  useLayoutEffect(() => {
+    const isAuth = communityAdmin || profile?.isSiteAdmin;
+    console.log(isAuth);
+
+    if (!isAuth) {
+      console.log("User is not authenticated to create an event");
+      redirect("/");
+    }
+  }, []);
 
   if (loading)
     return (

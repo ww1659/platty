@@ -41,7 +41,7 @@ export default function HomePage() {
         try {
           if (!user) {
             setEventsLoading(false);
-            console.log("No user:");
+            console.log("No user");
             return;
           }
 

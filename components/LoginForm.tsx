@@ -83,7 +83,7 @@ export default function LoginForm() {
       });
 
       if (authError) {
-        console.log(authError.message);
+        console.log("Auth Error:", authError.message);
         setLoading(false);
         setLoginError({ status: authError.status, msg: authError.message });
         return;
@@ -107,7 +107,11 @@ export default function LoginForm() {
         provider: "google",
         options: {
           scopes: "https://www.googleapis.com/auth/calendar",
-          redirectTo: window.location.href,
+          redirectTo: window.location.origin, // or the desired redirect URL
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
         },
       });
     } catch (error) {

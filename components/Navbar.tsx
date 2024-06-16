@@ -7,18 +7,26 @@ import { useAuth } from "@/context/UserContext";
 import { CreateEventDialog } from "./CreateEventDialog";
 import { Badge } from "./ui/badge";
 import { DarkModeToggle } from "./DarkModeToggle";
+import { useState } from "react";
+import { Icons } from "./Icons";
 
 export default function Navbar({
   className,
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { user, isLoading, logout, communityAdmin, profile } = useAuth();
+  const { user, isLoading, logout, communityAdmin, profile, session } =
+    useAuth();
+  const [logoutLoading, setLogoutLoading] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = async () => {
-    logout();
-    router.push("/login");
+    setLogoutLoading(true);
+    setTimeout(() => {
+      logout();
+      router.push("/login");
+      setLogoutLoading(false);
+    }, 2000);
   };
 
   if (user === undefined || user === null || isLoading) {
@@ -26,6 +34,7 @@ export default function Navbar({
   }
 
   const siteAdmin = profile?.isSiteAdmin;
+  const googleSignIn = session?.provider_token;
 
   return (
     <header className="sticky top-0 bg-background w-full z-50 border-b">
@@ -87,17 +96,19 @@ export default function Navbar({
           </nav>
         </div>
         <div className="flex flex-row items-center gap-5 ml-auto">
+          {googleSignIn && <Icons.google className="h-4 w-4" />}
           {user && <code>u/{profile?.firstName}</code>}
           <DarkModeToggle />
-          {user ? (
-            <Button size="sm" onClick={handleLogout}>
-              Logout
-            </Button>
-          ) : (
-            <Button size="sm">
-              <Link href="/login">Login</Link>
-            </Button>
-          )}
+          <Button size="sm" onClick={handleLogout}>
+            {logoutLoading ? (
+              <div className="flex flex-row items-center opacity-70">
+                <p>Logout</p>
+                <Icons.spinner className="h-4 w-4 animate-spin ml-2" />
+              </div>
+            ) : (
+              <p>Logout</p>
+            )}
+          </Button>
         </div>
       </div>
     </header>
