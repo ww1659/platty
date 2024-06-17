@@ -23,7 +23,6 @@ export default function Navbar({
   const handleLogout = async () => {
     setLogoutLoading(true);
     logout();
-    router.push("/login");
     setLogoutLoading(false);
   };
 

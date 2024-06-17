@@ -10,6 +10,7 @@ import { createClient } from "@/supabase/client";
 import { User, Session, AuthError } from "@supabase/supabase-js";
 import { checkAdminStatus, getProfileInfo } from "@/lib/serverActions";
 import { Profile } from "@/types/Profile";
+import { useRouter } from "next/navigation";
 
 type UserContextType = {
   user: User | null | undefined;
@@ -44,6 +45,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [providers, setProviders] = useState<string[]>([]);
   const [authError, setAuthError] = useState<AuthError | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const setData = async () => {
@@ -111,7 +113,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    console.log(error);
+    if (!error) {
+      router.push("/login");
+    }
   };
 
   return (
