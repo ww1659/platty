@@ -12,14 +12,12 @@ export function UnsplashImage({
   height,
 }: UnsplashImageProps) {
   return (
-    <div style={{ height: `${height}px`, width: "100%", marginBottom: "20px" }}>
-      <Image
-        src={imageSrc}
-        alt={`${imageDesc}`}
-        layout="responsive"
-        height={height}
-        width={1000}
-      />
-    </div>
+    <Image
+      src={imageSrc}
+      alt={`${imageDesc}`}
+      height={height}
+      width={1000}
+      className="rounded-lg"
+    />
   );
 }

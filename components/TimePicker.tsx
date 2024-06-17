@@ -4,18 +4,34 @@ import * as React from "react";
 import { Clock } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { TimePickerInput } from "../components/ui/time-picker";
+import { getHours, getMinutes } from "date-fns";
 
 interface TimePicker {
   date: Date | undefined;
   setDate: (date: Date | undefined) => void;
+  startDate?: Date | undefined;
+  endDate?: Date | undefined;
 }
 
-export function TimePicker({ date, setDate }: TimePicker) {
+export function TimePicker({ date, setDate, startDate, endDate }: TimePicker) {
   const minuteRef = React.useRef<HTMLInputElement>(null);
   const hourRef = React.useRef<HTMLInputElement>(null);
   const secondRef = React.useRef<HTMLInputElement>(null);
 
-  console.log(date, "TIME PICKER");
+  let startHours, startMinutes, endHours, endMinutes;
+
+  if (startDate) {
+    startHours = getHours(startDate);
+    startMinutes = getMinutes(startDate);
+  }
+
+  if (endDate) {
+    endHours = getHours(endDate);
+    endMinutes = getMinutes(endDate);
+  }
+
+  const isSameDay =
+    startDate && endDate && startDate.getDay() === endDate.getDay();
 
   return (
     <div className="flex items-end gap-2">

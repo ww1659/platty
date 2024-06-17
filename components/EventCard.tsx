@@ -9,6 +9,7 @@ import {
 import Image from "next/image";
 
 import { formatDate } from "@/lib/utils";
+import { ClockIcon, MapPinIcon } from "lucide-react";
 
 type EventCardProps = {
   eventTitle: string;
@@ -50,10 +51,17 @@ export default function EventCard({
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-1">
-        {startTime && (
-          <p className="text-sm font-bold">{formatDate(startTime)}</p>
-        )}
-        <p className="text-sm font-light">{eventLocation}</p>
+        <div className="flex flex-row gap-2 items-center pb-1">
+          <ClockIcon className="h-4 w-4" />
+          {startTime && (
+            <p className="text-sm font-bold">{formatDate(startTime)}</p>
+          )}
+        </div>
+
+        <div className="flex flex-row gap-2 items-center pb-1">
+          <MapPinIcon className="h-4 w-4" />
+          <p className="text-sm font-light">{eventLocation}</p>
+        </div>
       </CardContent>
       <CardFooter className="pb-1">
         <div>

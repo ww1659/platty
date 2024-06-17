@@ -12,6 +12,7 @@ import { createColumns } from "./create-columns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Icons } from "@/components/Icons";
 
 type UserEvent = {
   eventData: Event;
@@ -89,11 +90,9 @@ export default function EventPage() {
 
   if (eventsLoading || communitiesLoading)
     return (
-      <main className="flex min-h-screen flex-col items-start justify-start">
-        <div className="container mt-5">
-          <p>Loading</p>
-        </div>
-      </main>
+      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+        <Icons.spinner className="w-8 h-8 animate-spin" />
+      </div>
     );
 
   return (

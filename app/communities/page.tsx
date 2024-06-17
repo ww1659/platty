@@ -1,6 +1,7 @@
 "use client";
 
 import CommunityCard from "@/components/CommunityCard";
+import { Icons } from "@/components/Icons";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/UserContext";
 import axios from "axios";
@@ -40,8 +41,6 @@ export default function CommunitiesPage() {
     fetchCommunitiesData();
   }, []);
 
-  communitiesLoading && <p>loading</p>;
-
   return (
     <main className="flex min-h-screen flex-col items-start justify-start">
       <div className="container mt-5">
@@ -55,6 +54,11 @@ export default function CommunitiesPage() {
         </div>
 
         <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
+          {communitiesLoading && (
+            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+              <Icons.spinner className="w-8 h-8 animate-spin" />
+            </div>
+          )}
           {communities &&
             communities.map((community) => (
               <div key={community.id}>
