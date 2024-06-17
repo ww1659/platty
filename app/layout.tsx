@@ -23,7 +23,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    console.log("useEffect triggered");
     if (isLoading) {
       return;
     }
@@ -32,7 +31,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     } else {
       setUrlValid(true);
     }
-  }, [pathname, user, isLoading]);
+  }, [pathname, user, isLoading, router]);
 
   if (isLoading) {
     return null;

@@ -65,7 +65,7 @@ export default function CreateEventPage() {
       console.log("User is not authenticated to create an event");
       redirect("/");
     }
-  }, []);
+  }, [communityAdmin, profile?.isSiteAdmin]);
 
   if (loading)
     return (

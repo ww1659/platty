@@ -29,6 +29,38 @@ export const createColumns = (
   setUserEvents: Function
 ): ColumnDef<UserEvent>[] => [
   {
+    accessorKey: "eventData.startTime",
+    header: ({ column }) => {
+      return (
+        <div className="flex flex-row items-start">
+          <Button
+            variant="ghost"
+            className=""
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Date
+            <ArrowUpDown className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const startTime = row.original.eventData.startTime;
+      const endTime = row.original.eventData.endTime;
+      return (
+        <div className="font-medium">
+          <div>
+            <p className="text-xs">{getDay(startTime)}</p>
+            <h4>{formatDate(startTime)}</h4>
+            <p className="text-xs">
+              {formatDateTimeOnly(startTime)} - {formatDateTimeOnly(endTime)}
+            </p>
+          </div>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "eventData.imageUrl",
     header: "",
     cell: ({ row }) => {
@@ -83,38 +115,7 @@ export const createColumns = (
       );
     },
   },
-  {
-    accessorKey: "eventData.startTime",
-    header: ({ column }) => {
-      return (
-        <div className="flex flex-row items-start">
-          <Button
-            variant="ghost"
-            className=""
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Date
-            <ArrowUpDown className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      );
-    },
-    cell: ({ row }) => {
-      const startTime = row.original.eventData.startTime;
-      const endTime = row.original.eventData.endTime;
-      return (
-        <div className="font-medium">
-          <div>
-            <p className="text-xs">{getDay(startTime)}</p>
-            <h4>{formatDate(startTime)}</h4>
-            <p className="text-xs">
-              {formatDateTimeOnly(startTime)} - {formatDateTimeOnly(endTime)}
-            </p>
-          </div>
-        </div>
-      );
-    },
-  },
+
   {
     accessorKey: "eventData.price",
     header: ({ column }) => {

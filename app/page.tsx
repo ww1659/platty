@@ -67,7 +67,7 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchEventsData(dateFilter, communityFilter, priceFilter, searchQuery);
-  }, [dateFilter, communityFilter, priceFilter, searchQuery]);
+  }, [dateFilter, communityFilter, priceFilter, searchQuery, fetchEventsData]);
 
   useEffect(() => {
     const fetchCommunitiesData = async () => {
@@ -84,7 +84,7 @@ export default function HomePage() {
       }
     };
     fetchCommunitiesData();
-  }, []);
+  }, [user?.id]);
 
   return (
     <main className="flex min-h-screen flex-col items-start justify-start container">

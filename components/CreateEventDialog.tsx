@@ -44,7 +44,7 @@ export function CreateEventDialog({
       }
     };
     fetchCommunitiesData();
-  }, []);
+  }, [userId]);
 
   return (
     <Dialog>

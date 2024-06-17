@@ -27,7 +27,7 @@ export default function EventPage() {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [communitiesLoading, setCommunitiesLoading] = useState(true);
   const supabase = createClient();
-  const { user, profile, providers } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchEventsData = async () => {
@@ -99,12 +99,11 @@ export default function EventPage() {
     <>
       <main className="flex min-h-screen flex-row items-start justify-start container">
         <div className="w-1/6 border-r h-screen pt-5 overflow-hidden">
-          {/* <h4 className="px-2 py-1">Filter Events</h4> */}
           <h4 className="mb-1 rounded-md pr-2 py-1 text-sm font-semibold underline">
             Filter Events By Community
           </h4>
           <div className="grid grid-flow-row auto-rows-max text-sm">
-            {communities ? (
+            {communities.length > 0 ? (
               communities.map((community) => (
                 <p
                   key={community.id}
@@ -119,23 +118,12 @@ export default function EventPage() {
               ))
             ) : (
               <p className="group w-full items-center rounded-md border border-transparent pr-2 py-1 font-normal text-xs text-foreground">
-                Sorry, you are not a member of any communities...
+                You are not a member of any communities...
               </p>
             )}
           </div>
         </div>
         <div className="w-5/6 pt-5 h-screen overflow-auto">
-          <div className="container flex flex-row justify-between">
-            {/* <h3 className="rounded-md text-md font-semibold">
-              {profile?.firstName}&apos;s Events
-            </h3> */}
-            {/* <Tabs defaultValue="account">
-              <TabsList>
-                <TabsTrigger value="account">List View</TabsTrigger>
-                <TabsTrigger value="password">Calendar View</TabsTrigger>
-              </TabsList>
-            </Tabs> */}
-          </div>
           <div className="container mx-auto">
             {userEvents && (
               <DataTable columns={columns} data={filteredEvents} />

@@ -21,8 +21,6 @@ export default function CheckOutPage() {
   const price = searchParams.get("price");
   const name = searchParams.get("name");
 
-  console.log(eventId);
-
   const fetchClientSecret = useCallback(async () => {
     const eventData = {
       eventId: eventId,
@@ -34,8 +32,19 @@ export default function CheckOutPage() {
 
     try {
       const response = await axios.post("/api/checkout_sessions", eventData);
-      console.log(response, "RES");
-
+      if (response.status === 200) {
+        try {
+          const createEventResponse = await axios.post(
+            `/api/events/${eventId}`,
+            { userId: user?.id }
+          );
+          if (createEventResponse.status === 201) {
+            console.log("Event added successfully");
+          }
+        } catch (error) {
+          console.error("Error adding event:", error);
+        }
+      }
       return response.data.clientSecret;
     } catch (error) {
       console.error("Error fetching client secret:", error);

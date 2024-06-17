@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function PaymentSuccessPage() {
   const [status, setStatus] = useState(null);
@@ -30,15 +32,22 @@ export default function PaymentSuccessPage() {
 
   if (status === "complete") {
     return (
-      <main className="flex min-h-screen flex-col items-start justify-start container">
+      <main className="flex min-h-screen flex-col items-center justify-start container">
         <div className="mt-5">
           <div>
-            <h3>Payment Successful</h3>
-            <p>
-              We appreciate your business! A confirmation email will be sent to{" "}
-              {customerEmail}. If you have any questions, please email{" "}
-              <a href="mailto:orders@example.com">orders@example.com</a>.
+            <h3>Success!</h3>
+
+            <p className="my-3 font-md">
+              Payment successful - you are going! A confirmation email will be
+              sent to <code>{customerEmail}</code>.
             </p>
+            <Link
+              href={{
+                pathname: `/`,
+              }}
+            >
+              <Button>Back to Homepage</Button>
+            </Link>
           </div>
         </div>
       </main>

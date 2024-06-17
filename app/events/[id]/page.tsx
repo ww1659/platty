@@ -37,11 +37,6 @@ export default function EventPage() {
   const [event, setEvent] = useState<UserEvent | null>(null);
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  if (authError || !user) {
-    router.push("/error");
-  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,7 +60,7 @@ export default function EventPage() {
   }, [eventId, user]);
 
   function handleFavouritesClick() {
-    console.log("added to favourites");
+    console.log("Coming soon, in beta! Added to favourites");
   }
 
   if (loading)
@@ -98,8 +93,6 @@ export default function EventPage() {
         </div>
       </div>
     );
-
-  console.log(admin);
 
   return (
     <main className="flex min-h-screen flex-col items-start justify-start pb-20">
@@ -204,6 +197,7 @@ export default function EventPage() {
                 </div>
               </div>
             </div>
+            <Button className="w-full">Go to Event</Button>
           </div>
         </div>
       )}

@@ -483,6 +483,27 @@ export async function supaCheckIsAdmin(userId: string): Promise<boolean> {
   }
 }
 
+export async function supaGetCommunityAdminId(communityId: string) {
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("communities_users")
+      .select("user_id")
+      .eq("community_id", communityId)
+      .eq("is_admin", true);
+
+    if (error) {
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    const adminId = data[0].user_id;
+    return adminId;
+  } catch (error) {
+    throw new Error(`Unknown error occurred: ${error}`);
+  }
+}
+
 export async function supaGetCommunitiesWhereAdmin(userId: string) {
   const supabase = createClient();
 
@@ -602,6 +623,32 @@ export async function supaUpdateCalendarStatus(
 }
 
 //POST QUERIES
+export async function supaUpdateNotification(
+  notificationData: any,
+  communityId: string
+) {
+  const supabase = createClient();
+
+  const { type, userId, adminId, status } = notificationData;
+
+  const newNotification = {
+    type: type,
+    community_id: communityId,
+    user_id: userId,
+    admin_id: adminId,
+    status: status,
+  };
+
+  const { data, error } = await supabase
+    .from("notifications")
+    .insert(newNotification)
+    .select("*");
+
+  if (error) {
+    throw new Error(error.message);
+  } else return { status: "success", newNotification: data };
+}
+
 export async function supaPostEvent(
   eventData: EventPostData,
   communityId: string
@@ -681,7 +728,11 @@ export async function supaAddUserEvent(eventId: string, userId: string) {
     if (eventUserPostError) {
       throw new Error(`Event Post error: ${eventUserPostError.message}`);
     }
-    return { data: eventUserPostData, message: "event created successfully" };
+    return {
+      status: 201,
+      data: eventUserPostData,
+      message: "event created successfully",
+    };
   } catch (error) {
     throw new Error(`Unknown error occurred: ${error}`);
   }

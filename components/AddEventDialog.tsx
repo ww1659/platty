@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { useAuth } from "@/context/UserContext";
+import { formatDate } from "@/lib/utils";
 import { UserEvent } from "@/types/UserEvent";
 import axios from "axios";
 import { CheckIcon, PlusIcon } from "lucide-react";
@@ -24,6 +25,7 @@ interface AddEventDialogProps {
 
 export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
   const { user } = useAuth();
+
   async function handleFreeClick() {
     const userId = user?.id;
     const data = {
@@ -68,6 +70,20 @@ export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
             Sign up to this event here. This will add the event to the &apos;My
             Events&apos; page.
           </DialogDescription>
+          <div className="py-3">
+            <h3 className="font-light">{event.eventData.title}</h3>
+            <p className="font-light">
+              When: {formatDate(event.eventData.startTime)}
+            </p>
+            <p>
+              <span className="font-light">Cost: </span>
+              <span className="font-medium">
+                {event.eventData.price === 0
+                  ? "Free"
+                  : "£" + event.eventData.price}
+              </span>
+            </p>
+          </div>
           {event.eventData.price === 0 ? (
             <Button onClick={handleFreeClick}>Add Free Event</Button>
           ) : (
@@ -81,14 +97,11 @@ export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
                   },
                 }}
               >
-                <Button className="w-full">
-                  Add Event £{event.eventData.price}
-                </Button>
+                <Button className="w-full">To Stripe payment page</Button>
               </Link>
             </div>
           )}
         </DialogHeader>
-        <DialogFooter className="sm:justify-start"></DialogFooter>
       </DialogContent>
     </Dialog>
   );

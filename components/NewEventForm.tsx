@@ -225,7 +225,18 @@ export function NewEventForm({
       setEventImage(values.eventImage);
     });
     return () => subscription.unsubscribe();
-  }, [form]);
+  }, [
+    setEventDescription,
+    setEventEndDate,
+    setEventImage,
+    setEventLocation,
+    setEventName,
+    setEventTagline,
+    setEventPrice,
+    setEventStartDate,
+    setEventImage,
+    form,
+  ]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const userId = user?.id;
@@ -492,7 +503,7 @@ export function NewEventForm({
                 <DialogTitle>Event Image</DialogTitle>
                 <DialogDescription>
                   Browse and select an image to use for your event. Click the
-                  image and then confirm when you're done!
+                  image and then confirm when you&apos;re done!
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-wrap items-center justify-center m-1">
