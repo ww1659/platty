@@ -98,6 +98,7 @@ interface SetFormValuesProps {
   setEventEndDate: Dispatch<SetStateAction<Date | undefined>>;
   setEventImage: Dispatch<SetStateAction<string | undefined>>;
   communityId: string | string[];
+  communityName: string | undefined;
 }
 
 type SampleImage = {
@@ -118,6 +119,7 @@ export function NewEventForm({
   setEventEndDate,
   setEventImage,
   communityId,
+  communityName,
 }: SetFormValuesProps) {
   const [sampleImages, setSampleImages] = useState<SampleImage[] | []>([]);
   const [loadingImages, setLoadingImages] = useState(false);
@@ -253,7 +255,7 @@ export function NewEventForm({
           toast({
             title: "Event Created!",
             variant: "default",
-            description: `New event created for ${communityId}`,
+            description: `New event created for ${communityName}`,
           });
           router.push("/");
         })

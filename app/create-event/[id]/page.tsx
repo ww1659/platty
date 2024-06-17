@@ -92,6 +92,7 @@ export default function CreateEventPage() {
             setEventEndDate={setEventEndDate}
             setEventImage={setEventImage}
             communityId={communityId}
+            communityName={community?.name}
           />
         </div>
         <div className="w-1/2 py-0 px-5 m-0 invisible md:visible flex flex-col items-center">

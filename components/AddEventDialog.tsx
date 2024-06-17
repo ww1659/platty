@@ -17,6 +17,9 @@ import { UserEvent } from "@/types/UserEvent";
 import axios from "axios";
 import { CheckIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { Icons } from "./Icons";
+import { useToast } from "./ui/use-toast";
 
 interface AddEventDialogProps {
   event: UserEvent;
@@ -25,18 +28,25 @@ interface AddEventDialogProps {
 
 export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
   const { user } = useAuth();
+  const { toast } = useToast();
+
+  const [addEventLoading, setAddEventLoading] = useState(false);
 
   async function handleFreeClick() {
     const userId = user?.id;
     const data = {
       userId,
     };
-
+    setAddEventLoading(true);
     try {
       axios
         .post(`/api/events/${event.eventData.id}`, data)
         .then((response) => {
-          console.log("Event added successfully:", response.data);
+          toast({
+            title: "Event Added!",
+            variant: "default",
+            description: `New event added to your events list. See the event in 'My Events'.`,
+          });
 
           setEvent((currentEvent: any) => {
             if (currentEvent) {
@@ -53,8 +63,17 @@ export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
         });
     } catch (error) {
       console.error(error);
+    } finally {
+      setAddEventLoading(false);
     }
   }
+
+  if (addEventLoading)
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+        <Icons.spinner className="w-8 h-8 animate-spin" />
+      </div>
+    );
 
   return (
     <Dialog>
@@ -85,7 +104,17 @@ export function AddEventDialog({ event, setEvent }: AddEventDialogProps) {
             </p>
           </div>
           {event.eventData.price === 0 ? (
-            <Button onClick={handleFreeClick}>Add Free Event</Button>
+            addEventLoading ? (
+              <Button disabled={true}>
+                <Icons.spinner className="h-4 w-4 animate-spin" />
+              </Button>
+            ) : (
+              <DialogClose>
+                <Button onClick={handleFreeClick} className="w-full">
+                  Add Free Event
+                </Button>
+              </DialogClose>
+            )
           ) : (
             <div>
               <Link

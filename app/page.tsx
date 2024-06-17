@@ -137,6 +137,29 @@ export default function HomePage() {
           />
         </div>
       </div>
+
+      <div className="flex flex-row items-center justify-end space-x-2 pb-4 w-full">
+        <p className="text-xs">
+          Showing {currentEvents.length} of {events.length} results
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+        >
+          Previous{" "}
+        </Button>
+        <Button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+          variant="outline"
+          size="sm"
+        >
+          Next{" "}
+        </Button>
+      </div>
+
       {eventsLoading ? (
         <div className="flex justify-center flex-row flex-wrap gap-5 my-5">
           {Array.from({ length: 12 }).map((_, index) => (
@@ -144,52 +167,24 @@ export default function HomePage() {
           ))}
         </div>
       ) : (
-        <div>
-          <div className="flex justify-center flex-row flex-wrap gap-5 mb-10">
-            {events.length === 0 ? (
-              <h3>Sorry, no events matched your search...</h3>
-            ) : (
-              currentEvents.map((event) => (
-                <Link href={`/events/${event.id}`} key={event.id}>
-                  <EventCard
-                    eventTitle={event.title}
-                    eventDescription={event.description}
-                    eventLocation={event.location}
-                    startTime={event.startTime}
-                    endTime={event.endTime}
-                    eventImage={event.imageUrl}
-                    eventPrice={parseFloat(event.price.toString())}
-                  />
-                </Link>
-              ))
-            )}
-            <div className="flex flex-row justify-end items-center mb-4 gap-3 w-full">
-              <p className="text-xs">{currentEvents.length} results</p>
-              <Button
-                size="icon"
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-              >
-                <MinusCircleIcon className="h-4 w-4" />
-              </Button>
-              {Array.from({ length: totalPages }, (_, index) => (
-                <Button
-                  key={index + 1}
-                  size="icon"
-                  onClick={() => handlePageChange(index + 1)}
-                >
-                  {index + 1}
-                </Button>
-              ))}
-              <Button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                size="icon"
-              >
-                <PlusCircleIcon className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+        <div className="flex flex-row justify-center flex-wrap gap-5 mb-10">
+          {events.length === 0 ? (
+            <h3>Sorry, no events matched your search...</h3>
+          ) : (
+            currentEvents.map((event) => (
+              <Link href={`/events/${event.id}`} key={event.id}>
+                <EventCard
+                  eventTitle={event.title}
+                  eventDescription={event.description}
+                  eventLocation={event.location}
+                  startTime={event.startTime}
+                  endTime={event.endTime}
+                  eventImage={event.imageUrl}
+                  eventPrice={parseFloat(event.price.toString())}
+                />
+              </Link>
+            ))
+          )}
         </div>
       )}
     </main>

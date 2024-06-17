@@ -197,7 +197,6 @@ export default function EventPage() {
                 </div>
               </div>
             </div>
-            <Button className="w-full">Go to Event</Button>
           </div>
         </div>
       )}

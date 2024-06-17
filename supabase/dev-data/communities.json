@@ -5,6 +5,38 @@
   },
   {
     "name": "platty-tennis",
-    "description": "A group to share, improve and arrange tennis matches with fellow members of platty. "
+    "description": "A group to share, improve and arrange tennis matches with fellow members of platty."
+  },
+  {
+    "name": "platty-book-club",
+    "description": "A community for book enthusiasts at platty to discuss and share their favorite reads."
+  },
+  {
+    "name": "platty-cycling",
+    "description": "A group for cyclists at platty to organize rides and share cycling tips."
+  },
+  {
+    "name": "platty-coding",
+    "description": "A community for developers and tech enthusiasts at platty to collaborate on projects and share knowledge."
+  },
+  {
+    "name": "platty-gardening",
+    "description": "A group for gardening enthusiasts at platty to share tips, organize garden visits, and exchange plants."
+  },
+  {
+    "name": "platty-cooking",
+    "description": "A community for food lovers at platty to share recipes, cooking tips, and organize potluck dinners."
+  },
+  {
+    "name": "platty-art",
+    "description": "A group for artists and art lovers at platty to share their work, discuss techniques, and organize exhibitions."
+  },
+  {
+    "name": "platty-music",
+    "description": "A community for musicians and music lovers at platty to share their music, collaborate, and organize jam sessions."
+  },
+  {
+    "name": "platty-photography",
+    "description": "A group for photographers at platty to share their photos, discuss techniques, and organize photo walks."
   }
 ]
