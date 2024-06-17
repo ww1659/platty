@@ -3,7 +3,6 @@
 import EventCard from "@/components/EventCard";
 import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { createClient } from "@/supabase/client";
 import axios from "axios";
 import { Event } from "@/types/Event";
 import { useAuth } from "@/context/UserContext";
@@ -13,6 +12,8 @@ import { EventPriceFilterDropdown } from "@/components/EventFilterPriceDropdown"
 import { EventCommunityFilterDropdown } from "@/components/EventFilterCommunitiesDropdown";
 import { Input } from "@/components/ui/input";
 import { Community } from "@/types/Community";
+import { Button } from "@/components/ui/button";
+import { MinusCircleIcon, PlusCircleIcon } from "lucide-react";
 const lodash = require("lodash");
 
 export default function HomePage() {
@@ -22,7 +23,10 @@ export default function HomePage() {
   const [userCommunities, setUserCommunities] = useState<Community[] | []>([]);
   const [communitiesLoading, setCommunitiesLoading] = useState(true);
 
-  const { user } = useAuth();
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(events.length / 12);
+
+  const { user, isLoading } = useAuth();
   const [dateFilter, setDateFilter] = useState("");
   const [communityFilter, setCommunityFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
@@ -86,6 +90,24 @@ export default function HomePage() {
     fetchCommunitiesData();
   }, [user?.id]);
 
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const currentEvents = events.slice((currentPage - 1) * 12, currentPage * 12);
+
+  if (user === undefined || user === null || isLoading) {
+    return null;
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-start justify-start container">
       <div className="flex flex-row w-full justify-between items-center mt-5 mt-5 pb-3 mb-5 border-b">
@@ -122,24 +144,52 @@ export default function HomePage() {
           ))}
         </div>
       ) : (
-        <div className="flex justify-center flex-row flex-wrap gap-5 mb-10">
-          {events.length === 0 ? (
-            <h3>Sorry, no events matched your search...</h3>
-          ) : (
-            events.map((event) => (
-              <Link href={`/events/${event.id}`} key={event.id}>
-                <EventCard
-                  eventTitle={event.title}
-                  eventDescription={event.description}
-                  eventLocation={event.location}
-                  startTime={event.startTime}
-                  endTime={event.endTime}
-                  eventImage={event.imageUrl}
-                  eventPrice={parseFloat(event.price.toString())}
-                />
-              </Link>
-            ))
-          )}
+        <div>
+          <div className="flex justify-center flex-row flex-wrap gap-5 mb-10">
+            {events.length === 0 ? (
+              <h3>Sorry, no events matched your search...</h3>
+            ) : (
+              currentEvents.map((event) => (
+                <Link href={`/events/${event.id}`} key={event.id}>
+                  <EventCard
+                    eventTitle={event.title}
+                    eventDescription={event.description}
+                    eventLocation={event.location}
+                    startTime={event.startTime}
+                    endTime={event.endTime}
+                    eventImage={event.imageUrl}
+                    eventPrice={parseFloat(event.price.toString())}
+                  />
+                </Link>
+              ))
+            )}
+            <div className="flex flex-row justify-end items-center mb-4 gap-3 w-full">
+              <p className="text-xs">{currentEvents.length} results</p>
+              <Button
+                size="icon"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
+                <MinusCircleIcon className="h-4 w-4" />
+              </Button>
+              {Array.from({ length: totalPages }, (_, index) => (
+                <Button
+                  key={index + 1}
+                  size="icon"
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </Button>
+              ))}
+              <Button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                size="icon"
+              >
+                <PlusCircleIcon className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </main>

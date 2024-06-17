@@ -22,11 +22,9 @@ export default function Navbar({
 
   const handleLogout = async () => {
     setLogoutLoading(true);
-    setTimeout(() => {
-      logout();
-      router.push("/login");
-      setLogoutLoading(false);
-    }, 2000);
+    logout();
+    router.push("/login");
+    setLogoutLoading(false);
   };
 
   if (user === undefined || user === null || isLoading) {
@@ -91,7 +89,11 @@ export default function Navbar({
               </Link>
             )}
             {user && (communityAdmin || siteAdmin) && (
-              <CreateEventDialog userId={user.id} siteAdmin={siteAdmin} />
+              <CreateEventDialog
+                userId={user.id}
+                siteAdmin={siteAdmin}
+                communityAdmin={communityAdmin}
+              />
             )}
           </nav>
         </div>

@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "./supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  const publicRoutes = ["/login", "/sign-up"];
+  const publicRoutes = ["/login", "/sign-up", "login-error"];
 
   const { pathname } = request.nextUrl;
   if (publicRoutes.includes(pathname)) {

@@ -28,6 +28,7 @@ const formSchema = z.object({
 });
 
 export default function SignupForm() {
+  const [error, setError] = useState<string | undefined>("");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -49,18 +50,24 @@ export default function SignupForm() {
     formData.append("lastName", values.lastName);
 
     try {
-      await supaSignup(formData);
+      const { success, userId, error } = await supaSignup(formData);
       setLoading(false);
-      router.push("/");
+      if (success) {
+        router.push(`/holding?userId=${userId}`);
+      } else {
+        console.log(error);
+        setError(error);
+      }
     } catch (error) {
       console.error("Signup failed:", error);
       setLoading(false);
-      router.push("/error");
+      router.push("/login");
     }
   }
 
   return (
     <div className="grid gap-3">
+      {error && <p className="text-sm text-destructive">{error}</p>}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 ">
           <FormField

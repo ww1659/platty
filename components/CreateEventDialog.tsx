@@ -21,11 +21,13 @@ import axios from "axios";
 interface CreateEventDialogProps {
   userId: string;
   siteAdmin: boolean | undefined;
+  communityAdmin: boolean | undefined;
 }
 
 export function CreateEventDialog({
   userId,
   siteAdmin,
+  communityAdmin,
 }: CreateEventDialogProps) {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [communitiesLoading, setCommunitiesLoading] = useState(true);

@@ -8,6 +8,7 @@ import {
   supaGetCommunitiesWhereAdmin,
   supaGetProfileByUserId,
 } from "./queries";
+import { NextResponse } from "next/server";
 
 export async function supaLogout() {
   const supabase = createClient();
@@ -46,9 +47,8 @@ export async function supaSignup(formData: FormData) {
   const user = data.user;
   if (signupError || !user) {
     console.error("Signup error:", signupError);
-    redirect("/error");
+    return { success: false, error: signupError?.message };
   }
-
   const { error: profileError } = await supabase.from("profiles").insert({
     id: user.id,
     first_name: inputData.firstName,
@@ -57,11 +57,13 @@ export async function supaSignup(formData: FormData) {
 
   if (profileError) {
     console.error("Profile creation error:", profileError);
-    redirect("/error");
+    redirect("/login-error");
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
+  return { success: true, userId: user.id };
+
+  // revalidatePath("/", "layout");
+  // redirect("/");
 }
 
 export async function checkAdminStatus(userId: string): Promise<boolean> {

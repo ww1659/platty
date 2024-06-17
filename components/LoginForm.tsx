@@ -94,7 +94,7 @@ export default function LoginForm() {
       }
     } catch (error) {
       console.error("Login failed:", error);
-      router.push("/error");
+      router.push("/login-error");
       setLoading(false);
     }
   }

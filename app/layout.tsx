@@ -26,16 +26,17 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     if (isLoading) {
       return;
     }
-    if ((pathname === "/login" || pathname === "/sign-up") && user) {
+    if (
+      (pathname === "/login" ||
+        pathname === "/sign-up" ||
+        pathname === "/login-error") &&
+      user
+    ) {
       router.push("/");
     } else {
       setUrlValid(true);
     }
   }, [pathname, user, isLoading, router]);
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <>
