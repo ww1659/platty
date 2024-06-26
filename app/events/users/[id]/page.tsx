@@ -11,7 +11,6 @@ import { DataTable } from "./data-table";
 import { createColumns } from "./create-columns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Icons } from "@/components/Icons";
 
 type UserEvent = {

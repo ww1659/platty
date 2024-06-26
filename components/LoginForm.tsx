@@ -102,12 +102,11 @@ export default function LoginForm() {
   const googleSignIn = async () => {
     setLoading(true);
     try {
-      // Initiate OAuth2 sign-in with Google
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           scopes: "https://www.googleapis.com/auth/calendar",
-          redirectTo: window.location.origin,
+          redirectTo: `${window.location.origin}/holding`,
           queryParams: {
             access_type: "offline",
             prompt: "consent",

@@ -5,6 +5,7 @@ import {
   useEffect,
   useState,
   ReactNode,
+  useCallback,
 } from "react";
 import { createClient } from "@/supabase/client";
 import { User, Session, AuthError } from "@supabase/supabase-js";
@@ -47,58 +48,63 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    const setData = async () => {
-      try {
-        setIsLoading(true);
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
-        if (error) {
-          setAuthError(error);
-        }
-        setSession(session);
-        setUser(session?.user);
+  const fetchUserData = useCallback(async (user: User) => {
+    try {
+      const isCommunityAdmin = await checkAdminStatus(user.id);
+      setCommunityAdmin(isCommunityAdmin);
 
-        const { data: userData, error: userError } =
-          await supabase.auth.getUser();
-
-        if (!userError) {
-          const userProviders = userData.user.app_metadata.providers;
-          setProviders(userProviders);
-        }
-
-        if (session?.user) {
-          const isCommunityAdmin = await checkAdminStatus(session?.user.id);
-          setCommunityAdmin(isCommunityAdmin);
-
-          const { profileData } = await getProfileInfo(session?.user.id);
-          if (profileData && profileData.length > 0) {
-            const profileInfo = profileData[0];
-            setProfile({
-              firstName: profileInfo.first_name,
-              lastName: profileInfo.last_name,
-              memberSince: profileInfo.created_at,
-              isSiteAdmin: profileInfo.site_admin,
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
+      const { profileData } = await getProfileInfo(user.id);
+      if (profileData && profileData.length > 0) {
+        const profileInfo = profileData[0];
+        setProfile({
+          firstName: profileInfo.first_name,
+          lastName: profileInfo.last_name,
+          memberSince: profileInfo.created_at,
+          isSiteAdmin: profileInfo.site_admin,
+        });
       }
-    };
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }, []);
 
-    setData();
+  const fetchSessionData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+      if (error) {
+        setAuthError(error);
+      }
+      setSession(session);
+      setUser(session?.user || null);
+      if (session?.user) {
+        fetchUserData(session.user);
+      }
+    } catch (error) {
+      console.error("Error fetching session data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchUserData, supabase.auth]);
+
+  useEffect(() => {
+    fetchSessionData();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        setSession(session);
-        setUser(session?.user || null);
-        if (session?.user) {
-          setData();
+        if (session) {
+          setSession(session);
+          setUser(session.user);
+          fetchUserData(session.user);
+        } else {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setCommunityAdmin(false);
+          setProviders([]);
         }
       }
     );
@@ -106,7 +112,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [supabase.auth]);
+  }, [fetchSessionData, fetchUserData, supabase.auth]);
 
   const login = async () => {
     supabase.auth.getUser();
@@ -114,7 +120,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
-    console.log(error);
     if (!error) {
       router.push("/login");
     }

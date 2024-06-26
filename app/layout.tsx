@@ -8,7 +8,7 @@ import Navbar from "@/components/Navbar";
 import { UserProvider, useAuth } from "@/context/UserContext";
 import { Toaster } from "@/components/ui/toaster";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const fontSans = FontSans({
@@ -18,13 +18,12 @@ const fontSans = FontSans({
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
-  const [urlValid, setUrlValid] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
+  const urlValid = useMemo(() => {
     if (isLoading) {
-      return;
+      return false;
     }
     if (
       (pathname === "/login" ||
@@ -32,15 +31,20 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         pathname === "/login-error") &&
       user
     ) {
-      router.push("/");
-    } else {
-      setUrlValid(true);
+      return false;
     }
-  }, [pathname, user, isLoading, router]);
+    return true;
+  }, [pathname, user, isLoading]);
+
+  useEffect(() => {
+    if (!isLoading && !urlValid && user) {
+      router.push("/");
+    }
+  }, [isLoading, urlValid, user, router]);
 
   return (
     <>
-      {user && <Navbar />}
+      {user && pathname !== "/test" && <Navbar />}
       {urlValid && children}
     </>
   );

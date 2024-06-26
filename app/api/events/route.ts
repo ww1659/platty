@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     dateQuery,
     userId
   );
+
   const data = res;
   return Response.json(data);
 }
