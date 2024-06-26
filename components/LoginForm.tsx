@@ -28,7 +28,6 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const router = useRouter();
-
   const supabase = createClient();
   supabase.auth.onAuthStateChange((event, session) => {
     if (session && session.provider_token) {
@@ -75,6 +74,35 @@ export default function LoginForm() {
 
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
+        console.log("Auth Error:", authError.message);
+        setLoading(false);
+        setLoginError({ status: authError.status, msg: authError.message });
+        return;
+      } else {
+        setLoading(false);
+        setLoginError({ status: null, msg: null });
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      router.push("/login-error");
+      setLoading(false);
+    }
+  }
+
+  async function guestSignIn() {
+    setLoading(true);
+
+    const email = "thisisasampleemailaddress@sampleemail.com";
+    const password = "Password123";
 
     try {
       const { error: authError } = await supabase.auth.signInWithPassword({
@@ -174,6 +202,7 @@ export default function LoginForm() {
           </Button>
         </form>
       </Form>
+
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
@@ -184,7 +213,7 @@ export default function LoginForm() {
           </span>
         </div>
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center gap-3">
         {session === null ? (
           <Button
             variant="secondary"
@@ -200,6 +229,15 @@ export default function LoginForm() {
             Google
           </Button>
         ) : null}
+        <Button
+          variant="secondary"
+          className="w-full"
+          disabled={loading}
+          onClick={() => guestSignIn()}
+        >
+          {loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+          Log in as Guest
+        </Button>
       </div>
     </div>
   );
