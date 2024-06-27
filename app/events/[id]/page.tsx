@@ -45,6 +45,7 @@ export default function EventPage() {
         const response = await axios.get(`/api/events/${eventId}`, {
           params: { userId: user?.id },
         });
+
         setEvent(response.data.eventData);
         setAdmin(response.data.adminData);
       } catch (error) {

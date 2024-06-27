@@ -236,7 +236,6 @@ export function NewEventForm({
     setEventTagline,
     setEventPrice,
     setEventStartDate,
-    setEventImage,
     form,
   ]);
 
