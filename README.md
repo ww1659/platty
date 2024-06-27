@@ -4,7 +4,7 @@ Hello. This is an attempt at creating an events platform to allow users to brows
 
 ## Hosted Version
 
-You can access the hosted version of the project at [https://platty-3hoyk3f27-ww1659s-projects.vercel.app/](https://platty-3hoyk3f27-ww1659s-projects.vercel.app/). You can sign up for a new account, or sign in as a guest with admin rights (to be able to create events). These are test credentials so won't allow any Google actions to take place, but this account is configured as a community admin for event creation.
+You can access the hosted version of the project at [https://platty-jhx3isvhc-ww1659s-projects.vercel.app](https://platty-jhx3isvhc-ww1659s-projects.vercel.app). You can sign up for a new account, or sign in as a guest with admin rights (to be able to create events). These are test credentials so won't allow any Google actions to take place, but this account is configured as a community admin for event creation.
 
 ## Table of Contents
 
