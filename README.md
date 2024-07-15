@@ -36,9 +36,9 @@ You can access the hosted version of the project at [https://platty-jhx3isvhc-ww
 
 ### To-Do
 
-In short... LOTS. This is a non-exhaustive list of bugs and changes I need to address or update:
+This is a non-exhaustive list of bugs and changes I need to address or update:
 
-- Page reload on changing tab. Not sure why this is happening.
+- Page reload on changing tab. Not sure why this is happening. UPDATE: Fixed - React context was re-rendering content on tab change. 
 - Error handling. Login and Sign up error handling is not done particularly well. Redirects from Google and Stripe are not handled well. API routes could do with more specific error handling for edge cases.
 - Testing: I would like to build a testing suite and a testing DB (with SupaB)
 - Seed file: this is a tricky one as although I had started building a seed file, the UUID's created with Supabase are random so I can't configure other tables easily.
